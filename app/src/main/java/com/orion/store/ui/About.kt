@@ -1,5 +1,8 @@
 package com.orion.store.ui
 
+import androidx.compose.ui.res.stringResource
+import com.orion.store.R
+
 import android.content.Intent
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -128,7 +131,7 @@ private fun DevCoin(vm: MainViewModel, profile: DevProfile, slots: List<String>,
                     onError = { if (++stage == 2) deadImages += img })
             } else Column(Modifier.fillMaxSize().background(cs.tertiaryContainer), Arrangement.Center, Alignment.CenterHorizontally) {
                 Icon(Sym.EmojiEventsFilled, null, Modifier.size(40.dp), tint = cs.onTertiaryContainer)
-                Text("Hall of\nFame", textAlign = TextAlign.Center, style = MaterialTheme.typography.labelLargeEmphasized, color = cs.onTertiaryContainer)
+                Text(stringResource(R.string.ui_text_static_001), textAlign = TextAlign.Center, style = MaterialTheme.typography.labelLargeEmphasized, color = cs.onTertiaryContainer)
             }
         }
     }
@@ -160,7 +163,7 @@ fun AboutTab(vm: MainViewModel, padding: PaddingValues) {
             FlowRow(Modifier.fillMaxWidth().padding(horizontal = 24.dp).padding(top = 8.dp).reveal(1), horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
                 verticalArrangement = Arrangement.spacedBy(8.dp), itemVerticalAlignment = Alignment.CenterVertically) {
                 slots.forEachIndexed { i, id -> BadgeChip(id) { if (slots.size == 3) vm.profileClick("badges", i) } }
-                if (slots.size < 3) AssistChip({ vm.profileClick("badges", slots.size) }, { Text("Add badge") }, leadingIcon = { Icon(Sym.Add, null, Modifier.size(AssistChipDefaults.IconSize)) }, shape = Pill)
+                if (slots.size < 3) AssistChip({ vm.profileClick("badges", slots.size) }, { Text(stringResource(R.string.about_add_badge)) }, leadingIcon = { Icon(Sym.Add, null, Modifier.size(AssistChipDefaults.IconSize)) }, shape = Pill)
             }
         }
         item("connect") { Group("Connect", Modifier.reveal(2)) {
@@ -190,7 +193,7 @@ fun AboutTab(vm: MainViewModel, padding: PaddingValues) {
                     Box(Modifier.size(52.dp).background(fg.copy(.14f), MaterialShapes.Cookie9Sided.toShape()), contentAlignment = Alignment.Center) { Icon(rankIcon, null, tint = fg) }
                     Spacer(Modifier.width(14.dp))
                     Column(Modifier.weight(1f)) {
-                        Text("Fuel the Code", style = MaterialTheme.typography.titleLargeEmphasized, color = fg)
+                        Text(stringResource(R.string.about_fuel_the_code), style = MaterialTheme.typography.titleLargeEmphasized, color = fg)
                         Text(rankLabel, style = MaterialTheme.typography.bodyMedium, color = fg.copy(.85f))
                     }
                     Icon(Sym.PlayArrow, null, tint = fg)
@@ -203,8 +206,8 @@ fun AboutTab(vm: MainViewModel, padding: PaddingValues) {
                 .springClick(RoundedCornerShape(28.dp)) { vm.donateOpen = true; vm.haptic(H.SELECTION) }.background(cs.surfaceContainerHigh).padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                 TonalIcon(Sym.Coffee, Caution); Spacer(Modifier.width(14.dp))
                 Column(Modifier.weight(1f)) {
-                    Text("Buy me a coffee", style = MaterialTheme.typography.titleMedium)
-                    Text("Ko-fi, UPI or PayPal", style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant)
+                    Text(stringResource(R.string.about_buy_me_a_coffee), style = MaterialTheme.typography.titleMedium)
+                    Text(stringResource(R.string.about_ko_fi_upi_or_paypal), style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant)
                 }
                 Icon(Sym.ChevronRight, null)
             }
@@ -226,13 +229,13 @@ fun AboutTab(vm: MainViewModel, padding: PaddingValues) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Surface(shape = Pill, color = cs.surfaceContainerHigh) { Text("v$STORE_VERSION", Modifier.padding(horizontal = 12.dp, vertical = 4.dp), style = MaterialTheme.typography.labelLarge) }
                     // The quiet RE mark: this build is the native rewrite of the web app
-                    Surface(shape = Pill, color = cs.tertiaryContainer, contentColor = cs.onTertiaryContainer) { Text("RE · Native", Modifier.padding(horizontal = 12.dp, vertical = 4.dp), style = MaterialTheme.typography.labelLargeEmphasized) }
+                    Surface(shape = Pill, color = cs.tertiaryContainer, contentColor = cs.onTertiaryContainer) { Text(stringResource(R.string.about_re_native), Modifier.padding(horizontal = 12.dp, vertical = 4.dp), style = MaterialTheme.typography.labelLargeEmphasized) }
                     val c = if (s.useRemoteJson) Safe else Caution
                     Surface(shape = Pill, color = tonal(c).first, contentColor = tonal(c).second) {
                         Text("Source: ${if (s.useRemoteJson) "Remote" else "Local"}", Modifier.padding(horizontal = 12.dp, vertical = 4.dp), style = MaterialTheme.typography.labelLarge)
                     }
                 }
-                Text("Made with 💜 for Geeks", Modifier.padding(top = 12.dp).clip(Pill).clickable { vm.profileClick() }.padding(horizontal = 16.dp, vertical = 8.dp),
+                Text(stringResource(R.string.about_made_with_for_geeks), Modifier.padding(top = 12.dp).clip(Pill).clickable { vm.profileClick() }.padding(horizontal = 16.dp, vertical = 8.dp),
                     style = MaterialTheme.typography.labelLarge, color = cs.onSurfaceVariant)
             }
         }
@@ -245,7 +248,7 @@ fun AboutTab(vm: MainViewModel, padding: PaddingValues) {
 
 @Composable
 private fun Group(title: String, modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) = Column(modifier.padding(horizontal = 16.dp).padding(top = 28.dp).widthIn(max = 560.dp).fillMaxWidth()) {
-    Text(title, Modifier.padding(start = 8.dp, bottom = 12.dp), style = MaterialTheme.typography.titleLargeEmphasized)
+    Text(uiText(title), Modifier.padding(start = 8.dp, bottom = 12.dp), style = MaterialTheme.typography.titleLargeEmphasized)
     Column(verticalArrangement = Arrangement.spacedBy(8.dp), content = content)
 }
 
@@ -267,22 +270,22 @@ fun DevTools(vm: MainViewModel) {
     }
     fun save(t: String) { vm.set { it.copy(githubToken = t) }; editing = false; scope.launch { delay(500); vm.reload() } }
     Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text("Developer tools", Modifier.padding(start = 8.dp, bottom = 4.dp), style = MaterialTheme.typography.titleMediumEmphasized)
+        Text(stringResource(R.string.about_developer_tools), Modifier.padding(start = 8.dp, bottom = 4.dp), style = MaterialTheme.typography.titleMediumEmphasized)
         Card(shape = RoundedCornerShape(24.dp), colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainerHigh)) {
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) {
-                        Text("GitHub Access", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
-                        Text("Unlock 5000 requests/hr (Authenticated)", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(stringResource(R.string.about_github_access), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.about_unlock_5000_requests_hr_authenticated), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                     TextButton({ editing = !editing; draft = s.githubToken }) { Text(if (editing) "Cancel" else "Edit Token") }
                 }
                 if (editing) Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedTextField(draft, { draft = it }, Modifier.weight(1f), placeholder = { Text("ghp_...") }, singleLine = true, shape = RoundedCornerShape(16.dp),
+                    OutlinedTextField(draft, { draft = it }, Modifier.weight(1f), placeholder = { Text(stringResource(R.string.ui_text_static_002)) }, singleLine = true, shape = RoundedCornerShape(16.dp),
                         visualTransformation = if (show) VisualTransformation.None else PasswordVisualTransformation(),
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done), keyboardActions = KeyboardActions(onDone = { save(draft) }),
                         trailingIcon = { IconButton({ show = !show }) { Icon(if (show) Sym.VisibilityOff else Sym.Visibility, if (show) "Hide token" else "Show token") } })
-                    Button({ save(draft) }, shapes = ButtonDefaults.shapes()) { Text("Save") }
+                    Button({ save(draft) }, shapes = ButtonDefaults.shapes()) { Text(stringResource(R.string.ui_text_static_003)) }
                 } else Row(Modifier.clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.surfaceContainerHighest).padding(start = 12.dp), verticalAlignment = Alignment.CenterVertically) {
                     Box(Modifier.size(8.dp).clip(CircleShape).background(if (s.githubToken.isNotEmpty()) Safe else MaterialTheme.colorScheme.error))
                     Text(if (s.githubToken.isEmpty()) "No Token Set (Rate Limited)" else if (show) s.githubToken else "••••••••••••${s.githubToken.takeLast(4)}",
@@ -295,27 +298,27 @@ fun DevTools(vm: MainViewModel) {
                 }
             }
         }
-        Text("UI Debugger (Alignment Check)", Modifier.padding(start = 8.dp, top = 6.dp), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+        Text(stringResource(R.string.about_ui_debugger_alignment_check), Modifier.padding(start = 8.dp, top = 6.dp), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedButton({ vm.allApps().firstOrNull()?.let { vm.installToast(it, "test.apk") } }) { Text("Toast: Install") }
-            OutlinedButton({ vm.error("This is a test error message for alignment checking.") }) { Text("Toast: Error") }
-            OutlinedButton({ val t = System.currentTimeMillis(); vm.upd { it.copy(pendingCleanup = mapOf("test-1" to CleanupEntry("a", t), "test-2" to CleanupEntry("b", t), "test-3" to CleanupEntry("c", t))) } }) { Text("Deck: Clean") }
-            OutlinedButton({ vm.set { it.copy(hasSeenModernUITutorial = false) }; vm.tour = false; vm.open(Overlay.TUTORIAL) }) { Text("Trigger: Try New UI") }
-            Button({ vm.forcedTest = "checking" }, colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.error)) { Text("TEST FORCED UPDATE") }
+            OutlinedButton({ vm.allApps().firstOrNull()?.let { vm.installToast(it, "test.apk") } }) { Text(stringResource(R.string.about_toast_install)) }
+            OutlinedButton({ vm.error("This is a test error message for alignment checking.") }) { Text(stringResource(R.string.about_toast_error)) }
+            OutlinedButton({ val t = System.currentTimeMillis(); vm.upd { it.copy(pendingCleanup = mapOf("test-1" to CleanupEntry("a", t), "test-2" to CleanupEntry("b", t), "test-3" to CleanupEntry("c", t))) } }) { Text(stringResource(R.string.about_deck_clean)) }
+            OutlinedButton({ vm.set { it.copy(hasSeenModernUITutorial = false) }; vm.tour = false; vm.open(Overlay.TUTORIAL) }) { Text(stringResource(R.string.about_trigger_try_new_ui)) }
+            Button({ vm.forcedTest = "checking" }, colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.error)) { Text(stringResource(R.string.about_test_forced_update)) }
         }
         rate?.let { (limit, rem, reset) ->
             Card(shape = RoundedCornerShape(20.dp), colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainer)) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Row { Text("GitHub API Quota", Modifier.weight(1f), style = MaterialTheme.typography.labelLarge); Text("$rem/$limit", fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold) }
+                    Row { Text(stringResource(R.string.about_github_api_quota), Modifier.weight(1f), style = MaterialTheme.typography.labelLarge); Text("$rem/$limit", fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold) }
                     LinearProgressIndicator({ if (limit > 0) rem / limit.toFloat() else 0f }, Modifier.fillMaxWidth(), color = if (rem < limit * .2f) MaterialTheme.colorScheme.error else Safe)
                     Row { Text(if (s.githubToken.isNotEmpty()) "Authenticated" else "Public IP", Modifier.weight(1f), style = MaterialTheme.typography.labelSmall)
                         Text("Resets: ${SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(reset * 1000))}", style = MaterialTheme.typography.labelSmall) }
                 }
             }
         }
-        Text("Package Detective", Modifier.padding(start = 8.dp, top = 6.dp), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+        Text(stringResource(R.string.about_package_detective), Modifier.padding(start = 8.dp, top = 6.dp), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedTextField(pkg, { pkg = it }, Modifier.weight(1f), placeholder = { Text("com.example.app") }, singleLine = true, shape = RoundedCornerShape(16.dp))
+            OutlinedTextField(pkg, { pkg = it }, Modifier.weight(1f), placeholder = { Text(stringResource(R.string.ui_text_static_004)) }, singleLine = true, shape = RoundedCornerShape(16.dp))
             FilledIconButton({
                 if (pkg.isNotEmpty()) { pkgResult = "Checking..."; scope.launch {
                     pkgResult = runCatching { withContext(Dispatchers.IO) { vm.tracker.appInfo(pkg.trim()) }.let { "{\n  \"installed\": ${it.installed},\n  \"version\": ${it.version?.let { v -> "\"$v\"" }},\n  \"versionCode\": ${it.versionCode}\n}" } }.getOrElse { "Error: ${it.message}" }
@@ -323,35 +326,35 @@ fun DevTools(vm: MainViewModel) {
             }, shapes = IconButtonDefaults.shapes()) { Icon(Sym.Search, "Check package") }
         }
         if (pkgResult.isNotEmpty()) Code(pkgResult)
-        OutlinedButton({ showJson = !showJson }, Modifier.fillMaxWidth()) { Text("Raw Metadata Explorer", Modifier.weight(1f)); Icon(if (showJson) Sym.ExpandLess else Sym.ExpandMore, null) }
+        OutlinedButton({ showJson = !showJson }, Modifier.fillMaxWidth()) { Text(stringResource(R.string.about_raw_metadata_explorer), Modifier.weight(1f)); Icon(if (showJson) Sym.ExpandLess else Sym.ExpandMore, null) }
         if (showJson) {
             val raw = remember(d.apps) { if (d.apps.isEmpty()) "Cache Empty" else runCatching { Json(json) { prettyPrint = true }.encodeToString(ListSerializer(AppItem.serializer()), d.apps) }.getOrDefault("Error parsing cache") }
             Code(raw, Modifier.heightIn(max = 320.dp))
         }
         Row(Modifier.clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.surfaceContainer).padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
-                Text("Active Mirror", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(stringResource(R.string.about_active_mirror), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Text(vm.mirrorSource.ifEmpty { "Unknown" }, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
             }
             FilledTonalButton({ vm.set { it.copy(useRemoteJson = !it.useRemoteJson) } }, shapes = ButtonDefaults.shapes()) { Text(if (s.useRemoteJson) "Remote Mode" else "Local Mode") }
         }
-        OutlinedButton({ vm.set { it.withDevUnlocked(false) }; vm.settingsMenu = "none"; vm.haptic(H.WARNING) }, Modifier.fillMaxWidth().heightIn(min = 52.dp)) { Text("CLOSE DEVELOPER OPTIONS", fontWeight = FontWeight.Black) }
+        OutlinedButton({ vm.set { it.withDevUnlocked(false) }; vm.settingsMenu = "none"; vm.haptic(H.WARNING) }, Modifier.fillMaxWidth().heightIn(min = 52.dp)) { Text(stringResource(R.string.about_close_developer_options), fontWeight = FontWeight.Black) }
         Button(onNuke, modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp), shapes = ButtonDefaults.shapes(), colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.errorContainer, MaterialTheme.colorScheme.onErrorContainer)) {
-            Icon(Sym.DeleteForever, null); Spacer(Modifier.width(8.dp)); Text("NUCLEAR RESET (Wipe & Restart)", fontWeight = FontWeight.Black)
+            Icon(Sym.DeleteForever, null); Spacer(Modifier.width(8.dp)); Text(stringResource(R.string.about_nuclear_reset_wipe_restart), fontWeight = FontWeight.Black)
         }
     }
-    if (nuke) AlertDialog({ nuke = false }, icon = { Icon(Sym.DeleteForever, null) }, title = { Text("Nuclear reset?") },
-        text = { Text("Clears every setting, cache and library record, then restarts Orion. Downloaded APK files stay on disk.") },
+    if (nuke) AlertDialog({ nuke = false }, icon = { Icon(Sym.DeleteForever, null) }, title = { Text(stringResource(R.string.about_nuclear_reset)) },
+        text = { Text(stringResource(R.string.about_clears_every_setting_cache_and_library)) },
         confirmButton = { Button({
             nuke = false; vm.set { Settings() }; vm.upd { DataState() }
             scope.launch { delay(700); ctx.packageManager.getLaunchIntentForPackage(ctx.packageName)?.let { ctx.startActivity(it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)) }; exitProcess(0) }
-        }, colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.error)) { Text("Wipe & Restart") } },
-        dismissButton = { TextButton({ nuke = false }) { Text("Cancel") } })
+        }, colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.error)) { Text(stringResource(R.string.about_wipe_restart)) } },
+        dismissButton = { TextButton({ nuke = false }) { Text(stringResource(R.string.ui_text_static_005)) } })
 }
 
 @Composable
 private fun Code(text: String, modifier: Modifier = Modifier) = SelectionContainer {
-    Text(text, modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.surfaceContainerLowest).verticalScroll(rememberScrollState()).padding(12.dp),
+    Text(uiText(text), modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.surfaceContainerLowest).verticalScroll(rememberScrollState()).padding(12.dp),
         fontFamily = FontFamily.Monospace, fontSize = 11.sp, color = Safe)
 }
 
@@ -409,14 +412,14 @@ fun LeaderboardSheet(vm: MainViewModel, onDismiss: () -> Unit, onSubmit: () -> U
             when {
                 error -> Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Icon(Sym.WifiOff, null, Modifier.size(40.dp), tint = MaterialTheme.colorScheme.error)
-                    Text("Signal Lost", Modifier.padding(8.dp), style = MaterialTheme.typography.titleMedium)
-                    FilledTonalButton({ nonce++ }) { Text("Reconnect") }
+                    Text(stringResource(R.string.about_signal_lost), Modifier.padding(8.dp), style = MaterialTheme.typography.titleMedium)
+                    FilledTonalButton({ nonce++ }) { Text(stringResource(R.string.ui_text_static_006)) }
                 }
                 list == null -> ContainedLoadingIndicator()
                 list.isEmpty() -> Column(Modifier.padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("It's quiet... too quiet.", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                    Text("The Hall of Fame is empty.", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Text("Be the first legend to rise!", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.ui_text_static_007), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.about_the_hall_of_fame_is_empty), color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(stringResource(R.string.about_be_the_first_legend_to_rise), color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
                 }
                 else -> LazyColumn(Modifier.fillMaxWidth(), contentPadding = PaddingValues(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     itemsIndexed(list) { i, e ->
@@ -440,7 +443,7 @@ fun LeaderboardSheet(vm: MainViewModel, onDismiss: () -> Unit, onSubmit: () -> U
                             }
                             Column(horizontalAlignment = Alignment.End) {
                                 Text(NumberFormat.getInstance().format(e.xp), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black, fontFamily = FontFamily.Monospace)
-                                Text("XP", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text(stringResource(R.string.guide_xp), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                         }
                     }
@@ -450,7 +453,7 @@ fun LeaderboardSheet(vm: MainViewModel, onDismiss: () -> Unit, onSubmit: () -> U
         Button(onSubmit, modifier = Modifier.padding(16.dp).fillMaxWidth().heightIn(min = 56.dp), enabled = !cooldown, shapes = ButtonDefaults.shapes()) {
             Icon(if (cooldown) Sym.Lock else Sym.RocketLaunch, null); Spacer(Modifier.width(8.dp)); Text(if (cooldown) "Rank Claimed (Wait 1h)" else "Claim Global Rank", fontWeight = FontWeight.Bold)
         }
-        Text("Rankings are synchronized every hour after user submission", Modifier.fillMaxWidth().padding(bottom = 8.dp), textAlign = TextAlign.Center, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(stringResource(R.string.about_rankings_are_synchronized_every_hour_after), Modifier.fillMaxWidth().padding(bottom = 8.dp), textAlign = TextAlign.Center, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
@@ -547,14 +550,14 @@ fun LeaderboardSubmitSheet(vm: MainViewModel, onDismiss: () -> Unit) {
                         if (saved != null) Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).background(MaterialTheme.colorScheme.secondaryContainer).padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
                             AsyncImage(pngAvatar(char.url), null, Modifier.size(52.dp).clip(CircleShape).background(MaterialTheme.colorScheme.surface))
                             Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
-                                Text("Submitting As", style = MaterialTheme.typography.labelSmall); Text(saved.name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                                Text(stringResource(R.string.about_submitting_as), style = MaterialTheme.typography.labelSmall); Text(saved.name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
                             }
                             Column(horizontalAlignment = Alignment.End) {
-                                Row(verticalAlignment = Alignment.CenterVertically) { Icon(Sym.Lock, null, Modifier.size(12.dp)); Text(" Alias Secured", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold) }
-                                Text("Forever locked to this device", fontSize = 9.sp)
+                                Row(verticalAlignment = Alignment.CenterVertically) { Icon(Sym.Lock, null, Modifier.size(12.dp)); Text(stringResource(R.string.ui_text_static_008), style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold) }
+                                Text(stringResource(R.string.about_forever_locked_to_this_device), fontSize = 9.sp)
                             }
                         } else {
-                            Text("Choose Your Avatar", Modifier.fillMaxWidth(), style = MaterialTheme.typography.labelLarge)
+                            Text(stringResource(R.string.about_choose_your_avatar), Modifier.fillMaxWidth(), style = MaterialTheme.typography.labelLarge)
                             LazyVerticalGrid(GridCells.Fixed(5), Modifier.heightIn(max = 160.dp), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp), userScrollEnabled = false) {
                                 itemsIndexed(CHARACTERS) { _, c ->
                                     val sel = c.id == char.id
@@ -564,7 +567,7 @@ fun LeaderboardSubmitSheet(vm: MainViewModel, onDismiss: () -> Unit) {
                                 }
                             }
                             Text(char.name, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
-                            OutlinedTextField(name, { if (it.length <= 15) name = it }, Modifier.fillMaxWidth(), label = { Text("Your Alias (locked after first save)") }, placeholder = { Text("Captain Code") },
+                            OutlinedTextField(name, { if (it.length <= 15) name = it }, Modifier.fillMaxWidth(), label = { Text(stringResource(R.string.about_your_alias_locked_after_first_save)) }, placeholder = { Text(stringResource(R.string.about_captain_code)) },
                                 singleLine = true, shape = RoundedCornerShape(16.dp), supportingText = { Text("${name.length}/15") })
                         }
                         Button({ submit(false) }, modifier = Modifier.fillMaxWidth().heightIn(min = 60.dp), enabled = name.isNotEmpty() && canSubmit, shapes = ButtonDefaults.shapes()) {
@@ -572,25 +575,25 @@ fun LeaderboardSubmitSheet(vm: MainViewModel, onDismiss: () -> Unit) {
                             Text(if (canSubmit) "Beam Me Up!" else "Need 5 Contributions", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
                         }
                         if (err.isNotEmpty()) Text(err, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
-                        if (s.isDevUnlocked) TextButton({ submit(true) }) { Icon(Sym.BugReport, null, Modifier.size(16.dp)); Text(" Simulate Protocol (Debug)") }
+                        if (s.isDevUnlocked) TextButton({ submit(true) }) { Icon(Sym.BugReport, null, Modifier.size(16.dp)); Text(stringResource(R.string.ui_text_static_009)) }
                     }
                     "processing" -> {
                         Box(contentAlignment = Alignment.Center) { LoadingIndicator(Modifier.size(140.dp)); AsyncImage(pngAvatar(char.url), null, Modifier.size(64.dp).clip(CircleShape)) }
-                        Text("Warping to Multiverse...", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
-                        Text("Writing to Global Ledger", color = MaterialTheme.colorScheme.onSurfaceVariant, fontFamily = FontFamily.Monospace)
+                        Text(stringResource(R.string.about_warping_to_multiverse), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+                        Text(stringResource(R.string.about_writing_to_global_ledger), color = MaterialTheme.colorScheme.onSurfaceVariant, fontFamily = FontFamily.Monospace)
                     }
                     "success" -> {
                         Icon(Sym.Verified, null, Modifier.size(72.dp), tint = Safe)
-                        Text("You're In!", style = MaterialTheme.typography.headlineMediumEmphasized)
+                        Text(stringResource(R.string.ui_text_static_010), style = MaterialTheme.typography.headlineMediumEmphasized)
                         Text("${name.trim()} has been immortalized in the Hall of Fame.", textAlign = TextAlign.Center)
-                        Text("The leaderboard refreshes every 60 minutes. Check back soon!", textAlign = TextAlign.Center, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Button(onDismiss, modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp), shapes = ButtonDefaults.shapes()) { Text("Return to Base") }
+                        Text(stringResource(R.string.about_the_leaderboard_refreshes_every_60_minutes), textAlign = TextAlign.Center, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Button(onDismiss, modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp), shapes = ButtonDefaults.shapes()) { Text(stringResource(R.string.about_return_to_base)) }
                     }
                     else -> {
                         Icon(Sym.WifiOff, null, Modifier.size(64.dp), tint = MaterialTheme.colorScheme.error)
-                        Text("Signal Lost", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
+                        Text(stringResource(R.string.about_signal_lost), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
                         Text(err, textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        FilledTonalButton({ status = "idle" }, modifier = Modifier.fillMaxWidth(), shapes = ButtonDefaults.shapes()) { Text("Try Again") }
+                        FilledTonalButton({ status = "idle" }, modifier = Modifier.fillMaxWidth(), shapes = ButtonDefaults.shapes()) { Text(stringResource(R.string.about_try_again)) }
                     }
                 }
                 Spacer(Modifier.height(8.dp))

@@ -1,5 +1,8 @@
 package com.orion.store.ui
 
+import androidx.compose.ui.res.stringResource
+import com.orion.store.R
+
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
@@ -96,16 +99,16 @@ fun ForcedGate(vm: MainViewModel) {
                     else -> OutlinedButton({ act(a.id) }, modifier = m, enabled = a.enabled, shapes = ButtonDefaults.shapes(), content = content)
                 }
             }
-            if (status == "byok_required" && test == null) TextButton(vm::forcedByok) { Text("Open VirusTotal settings") }
+            if (status == "byok_required" && test == null) TextButton(vm::forcedByok) { Text(stringResource(R.string.gate_open_virustotal_settings)) }
             if (v.showSupportBlock) Card(Modifier.fillMaxWidth().padding(top = 16.dp), shape = RoundedCornerShape(20.dp), colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainer)) {
                 Column(Modifier.padding(16.dp)) {
                     if (v.showExportPath) {
-                        Text("Saved to", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(stringResource(R.string.gate_saved_to), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Text(exportPath, style = MaterialTheme.typography.bodySmall, fontFamily = FontFamily.Monospace)
-                    } else Text("If the installer keeps failing, save the APK to Downloads and install it manually from Files.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    } else Text(stringResource(R.string.gate_if_the_installer_keeps_failing_save), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
-            if (test == null && s.devConfigEnabled) TextButton(vm::forcedBypass, Modifier.padding(top = 12.dp)) { Text("Developer bypass") }
+            if (test == null && s.devConfigEnabled) TextButton(vm::forcedBypass, Modifier.padding(top = 12.dp)) { Text(stringResource(R.string.gate_developer_bypass)) }
             Spacer(Modifier.height(if (test != null) 200.dp else 24.dp))
         }
         if (test != null) DevPanel(vm, status, progress, text, Modifier.align(Alignment.BottomCenter))
@@ -140,15 +143,15 @@ private fun KeyEntry(vm: MainViewModel) {
     var key by remember { mutableStateOf("") }; var show by remember { mutableStateOf(false) }
     val clip = LocalClipboardManager.current
     Column(Modifier.fillMaxWidth().padding(top = 24.dp)) {
-        OutlinedTextField(key, { key = it }, Modifier.fillMaxWidth(), label = { Text("VirusTotal API key") }, placeholder = { Text("Enter your VirusTotal API key") }, singleLine = true,
+        OutlinedTextField(key, { key = it }, Modifier.fillMaxWidth(), label = { Text(stringResource(R.string.gate_virustotal_api_key)) }, placeholder = { Text(stringResource(R.string.gate_enter_your_virustotal_api_key)) }, singleLine = true,
             shape = RoundedCornerShape(20.dp), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             visualTransformation = if (show) VisualTransformation.None else PasswordVisualTransformation(),
             trailingIcon = { IconButton({ show = !show }) { Icon(if (show) Sym.VisibilityOff else Sym.Visibility, if (show) "Hide API key" else "Show API key") } })
         Row(Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button({ vm.forcedSaveKey(key) }, enabled = key.isNotBlank(), shapes = ButtonDefaults.shapes()) { Text("Save & scan") }
+            Button({ vm.forcedSaveKey(key) }, enabled = key.isNotBlank(), shapes = ButtonDefaults.shapes()) { Text(stringResource(R.string.gate_save_scan)) }
             if (saved.isNotEmpty()) {
                 IconButton({ clip.setText(AnnotatedString(saved)) }) { Icon(Sym.ContentCopy, "Copy API key") }
-                TextButton({ vm.set { it.copy(virusTotalApiKey = "") } }) { Text("Revoke saved key") }
+                TextButton({ vm.set { it.copy(virusTotalApiKey = "") } }) { Text(stringResource(R.string.gate_revoke_saved_key)) }
             }
         }
     }
@@ -159,16 +162,16 @@ private fun DevPanel(vm: MainViewModel, status: String, progress: Float, text: S
     var open by remember { mutableStateOf(true) }
     ElevatedCard(modifier.navigationBarsPadding().padding(12.dp).fillMaxWidth().widthIn(max = 560.dp), shape = RoundedCornerShape(28.dp)) {
         Row(Modifier.clickable { open = !open }.padding(start = 16.dp, end = 4.dp, top = 6.dp, bottom = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-            Badge(containerColor = MaterialTheme.colorScheme.tertiary) { Text("DEV", Modifier.padding(2.dp)) }
+            Badge(containerColor = MaterialTheme.colorScheme.tertiary) { Text(stringResource(R.string.ui_text_static_036), Modifier.padding(2.dp)) }
             Column(Modifier.weight(1f).padding(horizontal = 10.dp)) {
-                Text("Forced update preview", style = MaterialTheme.typography.labelLarge)
+                Text(stringResource(R.string.gate_forced_update_preview), style = MaterialTheme.typography.labelLarge)
                 Text(status, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
             }
         }
         AnimatedVisibility(open) {
             Column(Modifier.padding(bottom = 12.dp)) {
                 Row(Modifier.padding(horizontal = 16.dp)) {
-                    Text("Mock preview", style = MaterialTheme.typography.labelMedium, modifier = Modifier.weight(1f)); Text("${progress.toInt()}%", style = MaterialTheme.typography.labelMedium)
+                    Text(stringResource(R.string.gate_mock_preview), style = MaterialTheme.typography.labelMedium, modifier = Modifier.weight(1f)); Text("${progress.toInt()}%", style = MaterialTheme.typography.labelMedium)
                 }
                 Text(text.ifEmpty { "Preview the current forced update state." }, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp))
                 LazyRow(contentPadding = PaddingValues(horizontal = 12.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -207,17 +210,17 @@ fun Maintenance(vm: MainViewModel) {
                     }
                     Surface(onClick = { vm.haptic(H.SELECTION); game = true }, modifier = Modifier.padding(top = 10.dp), shape = Pill, color = cs.tertiary, contentColor = cs.onTertiary) {
                         Row(Modifier.padding(horizontal = 14.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Sym.SportsEsports, null, Modifier.size(16.dp)); Spacer(Modifier.width(6.dp)); Text("Tap to play", style = ty.labelLargeEmphasized)
+                            Icon(Sym.SportsEsports, null, Modifier.size(16.dp)); Spacer(Modifier.width(6.dp)); Text(stringResource(R.string.gate_tap_to_play), style = ty.labelLargeEmphasized)
                         }
                     }
                 }
             }
             Surface(Modifier.padding(top = 12.dp), shape = Pill, color = cs.secondaryContainer, contentColor = cs.onSecondaryContainer) {
                 Row(Modifier.padding(horizontal = 12.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Sym.Construction, null, Modifier.size(16.dp)); Spacer(Modifier.width(6.dp)); Text("Under overhaul", style = ty.labelLarge)
+                    Icon(Sym.Construction, null, Modifier.size(16.dp)); Spacer(Modifier.width(6.dp)); Text(stringResource(R.string.gate_under_overhaul), style = ty.labelLarge)
                 }
             }
-            Text("Improving Orion", Modifier.padding(top = 8.dp), style = ty.headlineLargeEmphasized, textAlign = TextAlign.Center)
+            Text(stringResource(R.string.gate_improving_orion), Modifier.padding(top = 8.dp), style = ty.headlineLargeEmphasized, textAlign = TextAlign.Center)
             Text(vm.config?.maintenanceMessage ?: "We're polishing the store with a major overhaul. Hang tight, it will be worth the wait.",
                 Modifier.padding(top = 8.dp).widthIn(max = 440.dp), style = ty.bodyMedium, textAlign = TextAlign.Center, color = cs.onSurfaceVariant,
                 maxLines = 9, overflow = TextOverflow.Ellipsis)
@@ -226,8 +229,8 @@ fun Maintenance(vm: MainViewModel) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         ContainedLoadingIndicator(Modifier.size(40.dp), containerColor = cs.primaryContainer, indicatorColor = cs.primary)
                         Column(Modifier.weight(1f).padding(start = 14.dp)) {
-                            Text("Store status", style = ty.labelMedium, color = cs.onSurfaceVariant)
-                            Text("Under maintenance", style = ty.titleMediumEmphasized, color = cs.primary)
+                            Text(stringResource(R.string.gate_store_status), style = ty.labelMedium, color = cs.onSurfaceVariant)
+                            Text(stringResource(R.string.gate_under_maintenance), style = ty.titleMediumEmphasized, color = cs.primary)
                         }
                     }
                     LinearWavyProgressIndicator({ fill }, Modifier.fillMaxWidth(), waveSpeed = 6.dp)
@@ -236,7 +239,7 @@ fun Maintenance(vm: MainViewModel) {
                 if (socials.discord.isNotEmpty()) CtaButton("Join the community", { vm.haptic(H.SELECTION); vm.tracker.open(socials.discord) }, icon = Sym.BrandDiscord, tonal = true)
                 AnimatedVisibility(dev) {
                     OutlinedButton({ vm.bypassMaintenance = true; vm.haptic(H.SUCCESS) }, modifier = Modifier.fillMaxWidth(), shapes = ButtonDefaults.shapes()) {
-                        Icon(Sym.Terminal, null); Spacer(Modifier.width(8.dp)); Text("Developer bypass")
+                        Icon(Sym.Terminal, null); Spacer(Modifier.width(8.dp)); Text(stringResource(R.string.gate_developer_bypass))
                     }
                 }
             }

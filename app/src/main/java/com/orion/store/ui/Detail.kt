@@ -1,5 +1,8 @@
 package com.orion.store.ui
 
+import androidx.compose.ui.res.stringResource
+import com.orion.store.R
+
 import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -152,8 +155,8 @@ fun DetailScreen(vm: MainViewModel, base: AppItem) {
                     Box {
                         IconButton({ more = true }) { Icon(Sym.MoreVert, "More options") }
                         DropdownMenu(more, { more = false }, shape = RoundedCornerShape(20.dp)) {
-                            DropdownMenuItem({ Text("Request app change") }, { more = false; vm.haptic(H.LIGHT); vm.changeRequest = true }, leadingIcon = { Icon(Sym.EditNote, null) })
-                            DropdownMenuItem({ Text("Report an issue") }, { more = false; vm.haptic(H.LIGHT); report() }, leadingIcon = { Icon(Sym.Flag, null) })
+                            DropdownMenuItem({ Text(stringResource(R.string.detail_request_app_change)) }, { more = false; vm.haptic(H.LIGHT); vm.changeRequest = true }, leadingIcon = { Icon(Sym.EditNote, null) })
+                            DropdownMenuItem({ Text(stringResource(R.string.detail_report_an_issue)) }, { more = false; vm.haptic(H.LIGHT); report() }, leadingIcon = { Icon(Sym.Flag, null) })
                             if (installed) {
                                 val managed = isManaged(app.id, s)
                                 DropdownMenuItem({ Text(if (managed) "Don't manage with Orion" else "Manage with Orion") }, {
@@ -161,7 +164,7 @@ fun DetailScreen(vm: MainViewModel, base: AppItem) {
                                     vm.toast(if (managed) "${app.name} left My Apps and updates" else "${app.name} is back in My Apps", action = "Undo") { vm.set { it.withManaged(app.id, managed) } }
                                 }, leadingIcon = { Icon(if (managed) Sym.VisibilityOff else Sym.Visibility, null) })
                             }
-                            if (s.isDevUnlocked) DropdownMenuItem({ Text("Developer deep links") }, { more = false; vm.haptic(H.SELECTION); shareSheet = true }, leadingIcon = { Icon(Sym.Link, null) })
+                            if (s.isDevUnlocked) DropdownMenuItem({ Text(stringResource(R.string.detail_developer_deep_links)) }, { more = false; vm.haptic(H.SELECTION); shareSheet = true }, leadingIcon = { Icon(Sym.Link, null) })
                         }
                     }
                 },
@@ -179,7 +182,7 @@ fun DetailScreen(vm: MainViewModel, base: AppItem) {
                     @Composable fun Main(icon: ImageVector?, label: String, enabled: Boolean = true, busy: Boolean = false, onClick: () -> Unit) =
                         Button(onClick, modifier = h.weight(1f), enabled = enabled, shapes = ButtonDefaults.shapesFor(ButtonDefaults.MediumContainerHeight)) {
                             if (busy) LoadingIndicator(Modifier.size(28.dp), color = LocalContentColor.current) else icon?.let { Icon(it, null) }
-                            Spacer(Modifier.width(10.dp)); Text(label, style = big, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                            Spacer(Modifier.width(10.dp)); Text(uiText(label), style = big, maxLines = 1, overflow = TextOverflow.Ellipsis)
                         }
                     @Composable fun Side(icon: ImageVector, label: String, enabled: Boolean = true, onClick: () -> Unit) =
                         FilledTonalIconButton(onClick, modifier = side, enabled = enabled, shapes = IconButtonDefaults.shapes()) { Icon(icon, label) }
@@ -220,10 +223,10 @@ fun DetailScreen(vm: MainViewModel, base: AppItem) {
                             else if (needsUpdate && !installing && !fallback && !unavailable) Box {
                                 Side(Sym.NotificationsOff, "Ignore Update Options") { ignoreMenu = !ignoreMenu; if (ignoreMenu) vm.haptic(H.LIGHT) }
                                 DropdownMenu(ignoreMenu, { ignoreMenu = false }, shape = RoundedCornerShape(20.dp)) {
-                                    Text("Ignore update", Modifier.padding(horizontal = 16.dp, vertical = 8.dp), style = MaterialTheme.typography.labelMedium, color = cs.onSurfaceVariant)
-                                    DropdownMenuItem({ Text("Ignore for 1 week") }, { ignore("week") }, leadingIcon = { Icon(Sym.Schedule, null) })
-                                    DropdownMenuItem({ Text("Until next version") }, { ignore("version", preferredVersion(app, s.streamOf(app.id))) }, leadingIcon = { Icon(Sym.SkipNext, null) })
-                                    DropdownMenuItem({ Text("Never show again") }, { ignore("never") }, leadingIcon = { Icon(Sym.Block, null) })
+                                    Text(stringResource(R.string.detail_ignore_update), Modifier.padding(horizontal = 16.dp, vertical = 8.dp), style = MaterialTheme.typography.labelMedium, color = cs.onSurfaceVariant)
+                                    DropdownMenuItem({ Text(stringResource(R.string.detail_ignore_for_1_week)) }, { ignore("week") }, leadingIcon = { Icon(Sym.Schedule, null) })
+                                    DropdownMenuItem({ Text(stringResource(R.string.detail_until_next_version)) }, { ignore("version", preferredVersion(app, s.streamOf(app.id))) }, leadingIcon = { Icon(Sym.SkipNext, null) })
+                                    DropdownMenuItem({ Text(stringResource(R.string.detail_never_show_again)) }, { ignore("never") }, leadingIcon = { Icon(Sym.Block, null) })
                                 }
                             }
                         }
@@ -257,7 +260,7 @@ fun DetailScreen(vm: MainViewModel, base: AppItem) {
                 Row(Modifier.padding(horizontal = 12.dp, vertical = 8.dp).fillMaxWidth().height(IntrinsicSize.Min)) {
                     @Composable fun Cell(value: @Composable () -> Unit, label: String) = Column(Modifier.weight(1f).padding(horizontal = 4.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                         Box(Modifier.height(28.dp), contentAlignment = Alignment.Center) { value() }
-                        Text(label, style = MaterialTheme.typography.labelMedium, color = cs.onSurfaceVariant, maxLines = 1)
+                        Text(uiText(label), style = MaterialTheme.typography.labelMedium, color = cs.onSurfaceVariant, maxLines = 1)
                     }
                     val divider = @Composable { VerticalDivider(Modifier.padding(vertical = 8.dp), color = cs.outlineVariant) }
                     Cell({ Text(app.latestVersion.removePrefix("v"), style = MaterialTheme.typography.titleMediumEmphasized, maxLines = 1, overflow = TextOverflow.Ellipsis) }, "Version")
@@ -305,11 +308,11 @@ fun DetailScreen(vm: MainViewModel, base: AppItem) {
                         SegmentedListItem({ vm.haptic(H.SELECTION); vm.tracker.open(r) }, ListItemDefaults.segmentedShapes(0, n), colors = ListItemDefaults.segmentedColors(containerColor = cs.surfaceContainer),
                             leadingContent = { Box(Modifier.size(40.dp), contentAlignment = Alignment.Center) { Icon(mark, null, Modifier.size(30.dp), tint = tint) } },
                             trailingContent = { Icon(Sym.OpenInNew, "Open $name") },
-                            supportingContent = { Text(r.substringAfter("://").substringAfter('/').trimEnd('/'), maxLines = 1, overflow = TextOverflow.Ellipsis) }) { Text(name, style = MaterialTheme.typography.titleMedium) }
+                            supportingContent = { Text(r.substringAfter("://").substringAfter('/').trimEnd('/'), maxLines = 1, overflow = TextOverflow.Ellipsis) }) { Text(uiText(name), style = MaterialTheme.typography.titleMedium) }
                     }
                     SegmentedListItem({ vm.haptic(H.SELECTION); vm.vtTarget = app }, ListItemDefaults.segmentedShapes(n - 1, n), colors = ListItemDefaults.segmentedColors(containerColor = cs.surfaceContainer),
                         leadingContent = { IconBox(Sym.Shield) }, trailingContent = { Icon(Sym.ChevronRight, null) },
-                        supportingContent = { Text("Check the download against 70+ antivirus engines", maxLines = 1, overflow = TextOverflow.Ellipsis) }) { Text("Scan with VirusTotal", style = MaterialTheme.typography.titleMedium) }
+                        supportingContent = { Text(stringResource(R.string.detail_check_the_download_against_70_antivirus), maxLines = 1, overflow = TextOverflow.Ellipsis) }) { Text(stringResource(R.string.detail_scan_with_virustotal), style = MaterialTheme.typography.titleMedium) }
                 }
             } }
             item("info") { Column(Modifier.reveal(5)) {
@@ -325,7 +328,7 @@ fun DetailScreen(vm: MainViewModel, base: AppItem) {
                     SegmentedListItem({ open = !open; vm.haptic(H.SELECTION) }, ListItemDefaults.segmentedShapes(0, if (open) rows.size + 1 else 1),
                         colors = ListItemDefaults.segmentedColors(containerColor = if (open) cs.secondaryContainer else cs.surfaceContainer),
                         leadingContent = { IconBox(Sym.Info) }, trailingContent = { Icon(Sym.ExpandMore, if (open) "Hide app info" else "Show app info", Modifier.graphicsLayer { rotationZ = turn }) },
-                        supportingContent = { Text(if (open) "Tap to hide" else "Developer, size, package and source", maxLines = 1) }) { Text("App info", style = MaterialTheme.typography.titleMedium) }
+                        supportingContent = { Text(if (open) "Tap to hide" else "Developer, size, package and source", maxLines = 1) }) { Text(stringResource(R.string.detail_app_info), style = MaterialTheme.typography.titleMedium) }
                     AnimatedVisibility(open, enter = expandVertically(MaterialTheme.motionScheme.defaultSpatialSpec()) + fadeIn(), exit = shrinkVertically(MaterialTheme.motionScheme.defaultSpatialSpec()) + fadeOut()) {
                         Column(verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)) {
                             rows.forEachIndexed { i, (ic, k, v) ->
@@ -362,9 +365,9 @@ fun DetailScreen(vm: MainViewModel, base: AppItem) {
         }
         Row(Modifier.padding(horizontal = 24.dp), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
-                Text("Select architecture", style = MaterialTheme.typography.headlineSmallEmphasized)
+                Text(stringResource(R.string.detail_select_architecture), style = MaterialTheme.typography.headlineSmallEmphasized)
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("Target:", style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant); Spacer(Modifier.width(6.dp))
+                    Text(stringResource(R.string.ui_text_static_034), style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant); Spacer(Modifier.width(6.dp))
                     Text(target?.version ?: app.latestVersion, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold); Spacer(Modifier.width(6.dp))
                     StreamBadge(target?.type ?: "Stable")
                 }
@@ -374,7 +377,7 @@ fun DetailScreen(vm: MainViewModel, base: AppItem) {
             Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                 Icon(Sym.Memory, null); Spacer(Modifier.width(12.dp))
                 Column(Modifier.weight(1f)) {
-                    Text("Device architecture", style = MaterialTheme.typography.labelMedium)
+                    Text(stringResource(R.string.detail_device_architecture), style = MaterialTheme.typography.labelMedium)
                     Text(friendlyArch(raw), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                 }
                 if (normalizeArch(raw) != Arch.Unknown) Tag("Your phone", cs.primary)
@@ -402,14 +405,14 @@ fun DetailScreen(vm: MainViewModel, base: AppItem) {
     }
 
     if (microG) AlertDialog({ microG = false },
-        confirmButton = { Button({ microG = false; vm.navigateToApp("microG-re") }, shapes = ButtonDefaults.shapes()) { Text("Install MicroG") } },
-        dismissButton = { TextButton({ microG = false; vm.tracker.open(Defaults.MICROG_INFO_URL) }) { Text("Learn about MicroG") } },
-        icon = { Icon(Sym.GppMaybe, null, tint = Caution) }, title = { Text("MicroG required") },
-        text = { Text("This app requires MicroG to sign in to your Google Account. Make sure you have it installed first.") })
+        confirmButton = { Button({ microG = false; vm.navigateToApp("microG-re") }, shapes = ButtonDefaults.shapes()) { Text(stringResource(R.string.detail_install_microg)) } },
+        dismissButton = { TextButton({ microG = false; vm.tracker.open(Defaults.MICROG_INFO_URL) }) { Text(stringResource(R.string.detail_learn_about_microg)) } },
+        icon = { Icon(Sym.GppMaybe, null, tint = Caution) }, title = { Text(stringResource(R.string.detail_microg_required)) },
+        text = { Text(stringResource(R.string.detail_this_app_requires_microg_to_sign)) })
 
     if (cleanupPrompt && cleanup != null) AlertDialog({ if (!cleaning) keep() },
-        confirmButton = { AnimatedVisibility(!cleaning) { Button({ cleanupDelete() }, shapes = ButtonDefaults.shapes()) { Icon(Sym.Delete, null); Spacer(Modifier.width(6.dp)); Text("Delete APK") } } },
-        dismissButton = { AnimatedVisibility(!cleaning) { TextButton({ keep() }) { Text("Keep for now") } } },
+        confirmButton = { AnimatedVisibility(!cleaning) { Button({ cleanupDelete() }, shapes = ButtonDefaults.shapes()) { Icon(Sym.Delete, null); Spacer(Modifier.width(6.dp)); Text(stringResource(R.string.detail_delete_apk)) } } },
+        dismissButton = { AnimatedVisibility(!cleaning) { TextButton({ keep() }) { Text(stringResource(R.string.detail_keep_for_now)) } } },
         icon = { if (cleaning) LoadingIndicator(Modifier.size(48.dp)) else Icon(Sym.CleaningServices, null) },
         title = { Text(if (cleaning) "Scrubbing bits..." else "Cleanup time!") },
         text = {

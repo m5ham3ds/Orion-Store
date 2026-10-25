@@ -1,6 +1,7 @@
 package com.orion.store
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
@@ -32,6 +33,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
+    override fun attachBaseContext(newBase: Context) = super.attachBaseContext(Lang.wrap(newBase))
     private val vm: MainViewModel by viewModels()
     private var pending: ((Int, Intent?) -> Unit)? = null
     private val results = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { r -> pending?.also { pending = null }?.invoke(r.resultCode, r.data) }

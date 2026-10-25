@@ -1,5 +1,8 @@
 package com.orion.store.ui
 
+import androidx.compose.ui.res.stringResource
+import com.orion.store.R
+
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.*
@@ -45,9 +48,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.platform.LocalLayoutDirection
+import com.orion.store.Lang
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.orion.store.R
 import com.orion.store.data.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -64,7 +69,7 @@ fun OrionRoot(vm: MainViewModel) {
     val s by vm.settings.collectAsState(); val d by vm.data.collectAsState()
     val act = LocalActivity.current
     CompositionLocalProvider(LocalVm provides vm, LocalS provides s, LocalD provides d) {
-        OrionTheme(s) { ThemeRevealHost {
+        CompositionLocalProvider(LocalLayoutDirection provides if (Lang.isArabic(act ?: androidx.compose.ui.platform.LocalContext.current)) LayoutDirection.Rtl else LayoutDirection.Ltr) { OrionTheme(s) { ThemeRevealHost {
             Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) { SharedTransitionLayout(if (Device.isTv) Modifier.padding(horizontal = 48.dp, vertical = 27.dp) else Modifier) { CompositionLocalProvider(LocalShared provides this) {
                 BackHandler { if (!vm.back()) act?.finish() }
                 val screen = when {
@@ -79,6 +84,7 @@ fun OrionRoot(vm: MainViewModel) {
             } } }
         } }
     }
+}
 }
 
 @Composable
@@ -105,7 +111,7 @@ private fun Home(vm: MainViewModel) {
                 if (s.aiButton) AiStarFace(vm, Modifier.padding(vertical = 8.dp))
             }) {
                 Spacer(Modifier.weight(1f))
-                items.forEach { n -> NavigationRailItem(vm.tab == n.tab, { vm.navTo(n.tab) }, { NavIcon(n, vm.tab == n.tab, updateCount) }, label = { Text(n.label) }) }
+                items.forEach { n -> NavigationRailItem(vm.tab == n.tab, { vm.navTo(n.tab) }, { NavIcon(n, vm.tab == n.tab, updateCount) }, label = { Text(uiText(n.label)) }) }
                 Spacer(Modifier.weight(1f))
             }
         }
@@ -119,7 +125,7 @@ private fun Home(vm: MainViewModel) {
                         enter = scaleIn() + fadeIn(), exit = scaleOut() + fadeOut()) {
                         ExtendedFloatingActionButton({ vm.batchCleanup() }, containerColor = MaterialTheme.colorScheme.tertiaryContainer, contentColor = MaterialTheme.colorScheme.onTertiaryContainer) {
                             Icon(Sym.CleaningServices, null); Spacer(Modifier.width(12.dp))
-                            Column { Text("${d.pendingCleanup.size} files", fontWeight = FontWeight.Bold); Text("Tap to clean", style = MaterialTheme.typography.labelSmall) }
+                            Column { Text("${d.pendingCleanup.size} files", fontWeight = FontWeight.Bold); Text(stringResource(R.string.root_tap_to_clean), style = MaterialTheme.typography.labelSmall) }
                         }
                     }
                 },
@@ -204,7 +210,7 @@ private fun FloatingNav(vm: MainViewModel, items: List<NavItem>, updates: Int, s
                     verticalAlignment = Alignment.CenterVertically) {
                     CompositionLocalProvider(LocalContentColor provides fg) { NavIcon(n, on, updates) }
                     AnimatedVisibility(on, enter = expandHorizontally(sp) + fadeIn(), exit = shrinkHorizontally(sp) + fadeOut()) {
-                        Text(n.label, Modifier.padding(start = 8.dp), style = MaterialTheme.typography.labelLarge, color = fg, maxLines = 1)
+                        Text(uiText(n.label), Modifier.padding(start = 8.dp), style = MaterialTheme.typography.labelLarge, color = fg, maxLines = 1)
                     }
                 }
             }
@@ -228,7 +234,7 @@ fun Header(vm: MainViewModel) {
     Row(Modifier.fillMaxWidth().height(64.dp).padding(start = 16.dp, end = 4.dp), verticalAlignment = Alignment.CenterVertically) {
         Box(Modifier.weight(1f)) {
             if (vm.tab == Tab.ABOUT) Row(verticalAlignment = Alignment.CenterVertically) {
-                Logo(vm); Spacer(Modifier.width(12.dp)); Text(subtitle, style = MaterialTheme.typography.titleLargeEmphasized)
+                Logo(vm); Spacer(Modifier.width(12.dp)); Text(uiText(subtitle), style = MaterialTheme.typography.titleLargeEmphasized)
             } else SearchPill(vm, subtitle)
         }
         AnimatedVisibility(vm.storeUpdateAvailable) {
@@ -242,7 +248,7 @@ fun Header(vm: MainViewModel) {
                 when {
                     dl > 0 -> Badge(containerColor = cs.primary) { Text("$dl") }
                     up > 0 -> Badge(containerColor = cs.tertiaryContainer, contentColor = cs.onTertiaryContainer) { Text("$up") }
-                    vm.storeUpdateAvailable -> Badge { Text("!") }
+                    vm.storeUpdateAvailable -> Badge { Text(stringResource(R.string.ui_text_static_050)) }
                 }
             }) { Icon(Sym.Settings, "Settings") }
         }
@@ -263,13 +269,13 @@ private fun TvBetaPill(vm: MainViewModel) {
     val src = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
     Surface({ open = true; vm.haptic(H.LIGHT) }, Modifier.padding(end = 4.dp).focusRing(src, Pill), shape = Pill, color = cs.tertiaryContainer, contentColor = cs.onTertiaryContainer, interactionSource = src) {
         Row(Modifier.padding(horizontal = 12.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-            Icon(Sym.Tv, null, Modifier.size(16.dp)); Spacer(Modifier.width(6.dp)); Text("TV · Beta", style = MaterialTheme.typography.labelLargeEmphasized)
+            Icon(Sym.Tv, null, Modifier.size(16.dp)); Spacer(Modifier.width(6.dp)); Text(stringResource(R.string.root_tv_beta), style = MaterialTheme.typography.labelLargeEmphasized)
         }
     }
-    if (open) AlertDialog({ open = false }, icon = { Icon(Sym.Tv, null) }, title = { Text("Orion on TV is in beta") },
-        text = { Text("Browse with your remote, and install TV and Android apps right on this TV. A few screens are still made for touch. If something feels off, report it and it gets fixed.") },
-        confirmButton = { TextButton({ open = false; vm.tracker.open(TV_BUG_URL) }) { Text("Report a TV bug") } },
-        dismissButton = { TextButton({ open = false }) { Text("Got it") } })
+    if (open) AlertDialog({ open = false }, icon = { Icon(Sym.Tv, null) }, title = { Text(stringResource(R.string.root_orion_on_tv_is_in_beta)) },
+        text = { Text(stringResource(R.string.root_browse_with_your_remote_and_install)) },
+        confirmButton = { TextButton({ open = false; vm.tracker.open(TV_BUG_URL) }) { Text(stringResource(R.string.root_report_a_tv_bug)) } },
+        dismissButton = { TextButton({ open = false }) { Text(stringResource(R.string.root_got_it)) } })
 }
 
 private const val TV_BUG_URL = "https://github.com/RookieEnough/Orion-Store/issues/new?title=%5BTV%20beta%5D%20&body=TV%20model%3A%20%0AAndroid%20TV%20version%3A%20%0AWhat%20happened%3A%20"
@@ -326,11 +332,11 @@ private fun AnnouncementButton(vm: MainViewModel) {
     TooltipBox(
         TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Below, 8.dp),
         tooltip = {
-            RichTooltip(title = { Text("From the Orion team") }, caretShape = TooltipDefaults.caretShape(),
+            RichTooltip(title = { Text(stringResource(R.string.root_from_the_orion_team)) }, caretShape = TooltipDefaults.caretShape(),
                 action = {
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        TextButton({ tip.dismiss() }) { Text("Later") }
-                        if (unread) TextButton({ vm.dismissAnnouncement(); vm.haptic(H.SELECTION); tip.dismiss() }) { Text("Got it") }
+                        TextButton({ tip.dismiss() }) { Text(stringResource(R.string.ui_text_static_051)) }
+                        if (unread) TextButton({ vm.dismissAnnouncement(); vm.haptic(H.SELECTION); tip.dismiss() }) { Text(stringResource(R.string.root_got_it)) }
                     }
                 },
                 colors = TooltipDefaults.richTooltipColors(containerColor = cs.secondaryContainer, contentColor = cs.onSecondaryContainer,
@@ -396,10 +402,10 @@ private fun Overlays(vm: MainViewModel) {
         AlertDialog(::close, icon = { Icon(Sym.ErrorOutline, null) }, title = { Text(i.title) },
             text = { Text(i.text, Modifier.heightIn(max = 400.dp).verticalScroll(rememberScrollState())) },
             confirmButton = {
-                if (i.uninstall != null) TextButton({ close(); vm.tracker.uninstall(i.uninstall) }) { Text("Uninstall current") }
-                else TextButton(::close) { Text("Got it") }
+                if (i.uninstall != null) TextButton({ close(); vm.tracker.uninstall(i.uninstall) }) { Text(stringResource(R.string.ui_text_static_052)) }
+                else TextButton(::close) { Text(stringResource(R.string.root_got_it)) }
             },
-            dismissButton = { i.retry?.let { f -> TextButton({ close(); vm.installFile(i.app, f, force = true) }) { Text("Try anyway") } } })
+            dismissButton = { i.retry?.let { f -> TextButton({ close(); vm.installFile(i.app, f, force = true) }) { Text(stringResource(R.string.ui_text_static_053)) } } })
     }
 }
 
@@ -410,10 +416,10 @@ private fun GuidePromptDialog(vm: MainViewModel) {
     fun done(open: Boolean) { vm.guidePrompt = false; vm.setFlag("guide", STORE_VERSION); if (open) { vm.haptic(H.SUCCESS); vm.open(Overlay.GUIDE) } }
     AlertDialog({ done(false) },
         icon = { MorphBlob(listOf(MaterialShapes.Cookie9Sided, MaterialShapes.Sunny), 0, 64.dp, cs.primaryContainer) { Icon(Sym.MenuBook, null, Modifier.size(30.dp), tint = cs.onPrimaryContainer) } },
-        title = { Text("Get to know Orion", style = MaterialTheme.typography.headlineSmallEmphasized) },
-        text = { Text("Every feature now lives in one field guide: backups, compact mode, XP and badges, the Hall of Fame, the Dino run and the rest. You can always find it on the Dev tab.") },
-        confirmButton = { Button({ done(true) }, shapes = ButtonDefaults.shapes()) { Text("Show me") } },
-        dismissButton = { TextButton({ done(false) }) { Text("Later") } })
+        title = { Text(stringResource(R.string.root_get_to_know_orion), style = MaterialTheme.typography.headlineSmallEmphasized) },
+        text = { Text(stringResource(R.string.root_every_feature_now_lives_in_one)) },
+        confirmButton = { Button({ done(true) }, shapes = ButtonDefaults.shapes()) { Text(stringResource(R.string.root_show_me)) } },
+        dismissButton = { TextButton({ done(false) }) { Text(stringResource(R.string.ui_text_static_051)) } })
 }
 
 /** Shown on the first start after a background pass that hit a problem. Failed updates stay ready to install with one tap. */
@@ -433,6 +439,6 @@ private fun AutoReportDialog(vm: MainViewModel, log: List<AutoResult>) {
                 }
             }
         },
-        confirmButton = { TextButton({ vm.dismissAutoReport(); vm.openSettings("queue") }) { Text("Open queue") } },
-        dismissButton = { TextButton(vm::dismissAutoReport) { Text("Later") } })
+        confirmButton = { TextButton({ vm.dismissAutoReport(); vm.openSettings("queue") }) { Text(stringResource(R.string.root_open_queue)) } },
+        dismissButton = { TextButton(vm::dismissAutoReport) { Text(stringResource(R.string.ui_text_static_051)) } })
 }

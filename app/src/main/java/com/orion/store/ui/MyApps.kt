@@ -1,5 +1,8 @@
 package com.orion.store.ui
 
+import androidx.compose.ui.res.stringResource
+import com.orion.store.R
+
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
@@ -59,7 +62,7 @@ fun MyAppsTab(vm: MainViewModel, padding: PaddingValues) {
         item {
             Row(Modifier.horizontalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 6.dp), horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
                 FilledTonalButton({ vm.haptic(H.SELECTION); vm.openSettings("queue") }, shapes = ButtonDefaults.shapes(), contentPadding = ButtonDefaults.SmallContentPadding) {
-                    Icon(Sym.Downloading, null, Modifier.size(18.dp)); Spacer(Modifier.width(6.dp)); Text("Queue")
+                    Icon(Sym.Downloading, null, Modifier.size(18.dp)); Spacer(Modifier.width(6.dp)); Text(stringResource(R.string.ui_text_static_038))
                     if (queue > 0) { Spacer(Modifier.width(6.dp)); Badge { Text("$queue") } }
                 }
                 VerticalDivider(Modifier.height(28.dp).padding(horizontal = 4.dp), color = cs.outlineVariant)
@@ -74,7 +77,7 @@ fun MyAppsTab(vm: MainViewModel, padding: PaddingValues) {
             if (query.isNotBlank()) Column(Modifier.fillMaxWidth().padding(40.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                 Icon(Sym.SearchOff, null, Modifier.size(48.dp), tint = cs.onSurfaceVariant)
                 Text("No apps matching “$query”", Modifier.padding(top = 12.dp), style = MaterialTheme.typography.titleMedium)
-                TextButton({ vm.libraryQuery = "" }) { Text("Clear search") }
+                TextButton({ vm.libraryQuery = "" }) { Text(stringResource(R.string.guide_clear_search)) }
             } else EmptyState(filterIcon(filter), EMPTY.getValue(filter), if (filter == MyAppsFilter.ALL) "Apps you download from Orion show up here." else null, Modifier.padding(top = 32.dp))
         }
         itemsIndexed(visible, key = { _, it -> it.app.id }) { i, r -> LibraryRow(vm, r, Modifier.animateItem().reveal(i)) }
@@ -169,7 +172,7 @@ private fun LibraryRow(vm: MainViewModel, r: MyAppRow, modifier: Modifier) {
             val action = r.primaryAction
             if (r.hasSavedApk && action in setOf("install", "update", "download")) IconButton({ vm.deleteLibraryApk(r.app) }) { Icon(Sym.DeleteOutline, "Delete APK") }
             @Composable fun Primary(label: String, onClick: () -> Unit) =
-                FilledTonalButton(onClick, shapes = ButtonDefaults.shapes(), contentPadding = ButtonDefaults.SmallContentPadding) { Text(label) }
+                FilledTonalButton(onClick, shapes = ButtonDefaults.shapes(), contentPadding = ButtonDefaults.SmallContentPadding) { Text(uiText(label)) }
             when {
                 r.status == "downloading" -> FilledTonalIconButton({ vm.cancelDownload(r.app.id) }, shapes = IconButtonDefaults.shapes()) { Icon(Sym.Close, "Cancel download") }
                 action == "install" -> Primary("Install") { r.savedFile?.let { vm.installFile(r.app, it) } }

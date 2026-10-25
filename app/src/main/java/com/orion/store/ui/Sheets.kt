@@ -1,5 +1,8 @@
 package com.orion.store.ui
 
+import androidx.compose.ui.res.stringResource
+import com.orion.store.R
+
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
@@ -63,7 +66,7 @@ fun colShape(i: Int, n: Int) = RoundedCornerShape(if (i == 0) 20.dp else 4.dp, i
 
 @Composable
 fun Eyebrow(text: String, c: Color = cs.primary, modifier: Modifier = Modifier) =
-    Text(text.uppercase(), modifier, style = ty.labelMedium, fontWeight = FontWeight.Bold, color = c, letterSpacing = 1.2.sp)
+    Text(uiText(text).uppercase(), modifier, style = ty.labelMedium, fontWeight = FontWeight.Bold, color = c, letterSpacing = 1.2.sp)
 
 /** Sheet lead block: optional visual, eyebrow, emphasized headline, supporting body. */
 @Composable
@@ -72,7 +75,7 @@ fun Lead(title: String, body: String? = null, eyebrow: String? = null, eyebrowCo
     Column(Modifier.fillMaxWidth().padding(bottom = 8.dp), horizontalAlignment = if (center) Alignment.CenterHorizontally else Alignment.Start) {
         top?.let { it(); Spacer(Modifier.height(16.dp)) }
         eyebrow?.let { Eyebrow(it, eyebrowColor) }
-        Text(title, style = ty.headlineSmallEmphasized, textAlign = align)
+        Text(uiText(title), style = ty.headlineSmallEmphasized, textAlign = align)
         body?.let { Text(it, Modifier.padding(top = 6.dp), style = ty.bodyMedium, color = cs.onSurfaceVariant, textAlign = align) }
     }
 }
@@ -82,7 +85,7 @@ fun PickerHeader(title: String, subtitle: String?, onBack: () -> Unit) =
     Row(Modifier.fillMaxWidth().padding(start = 24.dp, end = 24.dp, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically) {
         BackHandler(onBack = onBack)
         Column(Modifier.weight(1f)) {
-            Text(title, style = ty.headlineSmallEmphasized)
+            Text(uiText(title), style = ty.headlineSmallEmphasized)
             subtitle?.let { Text(it, style = ty.bodySmall, color = cs.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis) }
         }
     }
@@ -200,7 +203,7 @@ fun ReleaseNotesSheet(vm: MainViewModel, onDismiss: () -> Unit) = OrionSheet(onD
             list == null && !failed -> items(2) { Skeleton(Modifier.fillMaxWidth().height(140.dp)) }
             list.isNullOrEmpty() -> item {
                 EmptyState(Sym.CloudOff, "Can't reach GitHub", "Release notes load once you're online.")
-                TextButton({ vm.tracker.open("https://github.com/RookieEnough/Orion-Store/releases") }, Modifier.fillMaxWidth()) { Text("Open releases on GitHub") }
+                TextButton({ vm.tracker.open("https://github.com/RookieEnough/Orion-Store/releases") }, Modifier.fillMaxWidth()) { Text(stringResource(R.string.sheets_open_releases_on_github)) }
             }
             else -> itemsIndexed(list, key = { _, r -> r.version }) { i, r ->
                 ReleaseCard(vm, r, latest = i == 0, expanded = (open ?: list[0].version) == r.version) { open = if ((open ?: list[0].version) == r.version) "" else r.version }
@@ -235,7 +238,7 @@ private fun ReleaseCard(vm: MainViewModel, r: Release, latest: Boolean, expanded
                         }
                     }
                 }
-                if (r.url.isNotEmpty()) TextButton({ vm.tracker.open(r.url) }, Modifier.padding(top = 8.dp)) { Text("Full notes on GitHub"); Spacer(Modifier.width(6.dp)); Icon(Sym.OpenInNew, null, Modifier.size(16.dp)) }
+                if (r.url.isNotEmpty()) TextButton({ vm.tracker.open(r.url) }, Modifier.padding(top = 8.dp)) { Text(stringResource(R.string.sheets_full_notes_on_github)); Spacer(Modifier.width(6.dp)); Icon(Sym.OpenInNew, null, Modifier.size(16.dp)) }
             }
         }
     }
@@ -310,7 +313,7 @@ private fun ModernUiSheet(vm: MainViewModel, onDismiss: () -> Unit) {
                 0 -> {
                     CtaButton("Enable Now", now, icon = Sym.Bolt)
                     CtaButton("How to Enable", { step = 1; vm.haptic(H.SELECTION) }, icon = Sym.Lightbulb, tonal = true)
-                    TextButton(close, Modifier.fillMaxWidth()) { Text("Skip") }
+                    TextButton(close, Modifier.fillMaxWidth()) { Text(stringResource(R.string.ui_text_static_067)) }
                 }
                 UI_STEPS.lastIndex -> {
                     CtaButton("Enable Now", now, icon = Sym.Bolt)
@@ -318,7 +321,7 @@ private fun ModernUiSheet(vm: MainViewModel, onDismiss: () -> Unit) {
                 }
                 else -> {
                     CtaButton("Next", { step++; vm.haptic(H.SELECTION) }, icon = Sym.ArrowForward)
-                    TextButton(close, Modifier.fillMaxWidth()) { Text("Skip") }
+                    TextButton(close, Modifier.fillMaxWidth()) { Text(stringResource(R.string.ui_text_static_067)) }
                 }
             }
         }
@@ -386,13 +389,13 @@ fun BundlePreviewSheet(vm: MainViewModel, b: BundleItem, onDismiss: () -> Unit) 
                 CtaButton("Download", { vm.bundleDownload(b) }, icon = Sym.Download, enabled = apps.isNotEmpty())
                 Row(Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     FilledTonalButton({ picking = true }, modifier = Modifier.weight(1f), shapes = ButtonDefaults.shapes()) {
-                        Icon(Sym.Add, null, Modifier.size(18.dp)); Spacer(Modifier.width(6.dp)); Text("Add app")
+                        Icon(Sym.Add, null, Modifier.size(18.dp)); Spacer(Modifier.width(6.dp)); Text(stringResource(R.string.sheets_add_app))
                     }
                     if (customized) FilledTonalButton({ vm.set { it.resetBundle(b.id) }; vm.haptic(H.MEDIUM) }, modifier = Modifier.weight(1f), shapes = ButtonDefaults.shapes()) {
-                        Icon(Sym.RestartAlt, null, Modifier.size(18.dp)); Spacer(Modifier.width(6.dp)); Text("Reset")
+                        Icon(Sym.RestartAlt, null, Modifier.size(18.dp)); Spacer(Modifier.width(6.dp)); Text(stringResource(R.string.ui_text_static_029))
                     }
                     if (local) OutlinedButton({ ask = "Delete this bundle?" }, modifier = Modifier.weight(1f), shapes = ButtonDefaults.shapes(), colors = ButtonDefaults.outlinedButtonColors(contentColor = cs.error)) {
-                        Icon(Sym.Delete, null, Modifier.size(18.dp)); Spacer(Modifier.width(6.dp)); Text("Delete")
+                        Icon(Sym.Delete, null, Modifier.size(18.dp)); Spacer(Modifier.width(6.dp)); Text(stringResource(R.string.ui_text_static_068))
                     }
                 }
             }
@@ -484,7 +487,7 @@ fun VirusTotalSheet(vm: MainViewModel, app: AppItem, onDismiss: () -> Unit) = Or
                 VtView.ERROR -> {
                     Lead("Needs attention", vt.error.ifEmpty { "Something went wrong." }, "Scan stopped", cs.error) { Blob(Sym.ErrorOutline, cs.error, 72, MaterialShapes.Cookie7Sided) }
                     CtaButton("Scan again", { vt.reset(); vt.view = if (s.virusTotalApiKey.isNotEmpty()) VtView.READY else VtView.KEY }, icon = Sym.Refresh, tonal = true)
-                    TextButton(::revoke, Modifier.fillMaxWidth(), colors = ButtonDefaults.textButtonColors(contentColor = cs.error)) { Text("Revoke Key") }
+                    TextButton(::revoke, Modifier.fillMaxWidth(), colors = ButtonDefaults.textButtonColors(contentColor = cs.error)) { Text(stringResource(R.string.sheets_revoke_key)) }
                 }
             }
         }
@@ -505,7 +508,7 @@ private fun ModWarning(page: Int, onNext: () -> Unit) {
 private fun VtKey(vm: MainViewModel, vt: VtScan, saved: String, revoke: () -> Unit) {
     var key by rememberSaveable { mutableStateOf(saved) }; var show by remember { mutableStateOf(false) }; var err by remember { mutableStateOf("") }
     Lead("Connect VirusTotal", "Your key stays on this device. Orion uses it only when you start a scan.", "BYOK setup")
-    OutlinedTextField(key, { key = it; err = "" }, Modifier.fillMaxWidth(), label = { Text("API Key") }, placeholder = { Text("Paste your VirusTotal API key") },
+    OutlinedTextField(key, { key = it; err = "" }, Modifier.fillMaxWidth(), label = { Text(stringResource(R.string.sheets_api_key)) }, placeholder = { Text(stringResource(R.string.sheets_paste_your_virustotal_api_key)) },
         singleLine = true, isError = err.isNotEmpty(), supportingText = if (err.isNotEmpty()) ({ Text(err) }) else null, shape = RoundedCornerShape(16.dp),
         visualTransformation = if (show) VisualTransformation.None else PasswordVisualTransformation(), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         leadingIcon = { Icon(Sym.Key, null) },
@@ -514,15 +517,15 @@ private fun VtKey(vm: MainViewModel, vt: VtScan, saved: String, revoke: () -> Un
         if (key.isBlank()) { err = "Paste your VirusTotal API key first."; vm.haptic(H.ERROR) }
         else { vm.set { it.copy(virusTotalApiKey = key.trim()) }; vt.view = VtView.READY; vm.haptic(H.SUCCESS) }
     }, icon = Sym.Save)
-    if (saved.isNotEmpty()) TextButton(revoke, Modifier.fillMaxWidth(), colors = ButtonDefaults.textButtonColors(contentColor = cs.error)) { Text("Remove Saved Key") }
+    if (saved.isNotEmpty()) TextButton(revoke, Modifier.fillMaxWidth(), colors = ButtonDefaults.textButtonColors(contentColor = cs.error)) { Text(stringResource(R.string.sheets_remove_saved_key)) }
     Column {
         GroupItem(0, 2, onClick = { vm.tracker.open(VT_KEY_TUTORIAL) }) {
-            ListItem({ Text("Watch key tutorial", fontWeight = FontWeight.SemiBold) }, supportingContent = { Text("Quick help for finding your VirusTotal key.") },
+            ListItem({ Text(stringResource(R.string.sheets_watch_key_tutorial), fontWeight = FontWeight.SemiBold) }, supportingContent = { Text(stringResource(R.string.sheets_quick_help_for_finding_your_virustotal)) },
                 leadingContent = { Blob(Sym.PlayCircle, Red, 40) }, trailingContent = { Icon(Sym.OpenInNew, null) },
                 colors = ListItemDefaults.colors(containerColor = Color.Transparent))
         }
         GroupItem(1, 2) {
-            ListItem({ Text("Quota tip", fontWeight = FontWeight.SemiBold) }, supportingContent = { Text("Free VirusTotal keys are commonly limited to 4 requests per minute.") },
+            ListItem({ Text(stringResource(R.string.sheets_quota_tip), fontWeight = FontWeight.SemiBold) }, supportingContent = { Text(stringResource(R.string.sheets_free_virustotal_keys_are_commonly_limited)) },
                 leadingContent = { Blob(Sym.Speed, Caution, 40) }, colors = ListItemDefaults.colors(containerColor = Color.Transparent))
         }
     }
@@ -540,13 +543,13 @@ private fun VtReady(target: ScanTarget?, key: String, scan: () -> Unit, revoke: 
                 colors = ListItemDefaults.colors(containerColor = Color.Transparent))
         }
         GroupItem(1, 2) {
-            ListItem({ Text(masked, fontFamily = FontFamily.Monospace) }, supportingContent = { Text("Limit tip") }, leadingContent = { Blob(Sym.Key, cs.primary, 40) },
+            ListItem({ Text(masked, fontFamily = FontFamily.Monospace) }, supportingContent = { Text(stringResource(R.string.sheets_limit_tip)) }, leadingContent = { Blob(Sym.Key, cs.primary, 40) },
                 trailingContent = { Tag("Use sparingly", Caution) }, colors = ListItemDefaults.colors(containerColor = Color.Transparent))
         }
     }
     CtaButton("Start VirusTotal Scan", scan, icon = Sym.Radar, enabled = target != null)
-    TextButton(revoke, Modifier.fillMaxWidth(), colors = ButtonDefaults.textButtonColors(contentColor = cs.error)) { Text("Revoke Key") }
-    Text("Tip: one scan may need report, upload, and polling calls. Save your free quota for apps you actually plan to install.", style = ty.bodySmall, color = cs.onSurfaceVariant)
+    TextButton(revoke, Modifier.fillMaxWidth(), colors = ButtonDefaults.textButtonColors(contentColor = cs.error)) { Text(stringResource(R.string.sheets_revoke_key)) }
+    Text(stringResource(R.string.sheets_tip_one_scan_may_need_report), style = ty.bodySmall, color = cs.onSurfaceVariant)
 }
 
 @Composable
@@ -556,13 +559,13 @@ private fun VtScanning(vt: VtScan) {
     val p by animateFloatAsState(vt.progress, MaterialTheme.motionScheme.defaultSpatialSpec(), label = "vtp")
     Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(12.dp)) {
         LoadingIndicator(Modifier.size(112.dp))
-        Text("Scanning softly...", style = ty.titleLargeEmphasized)
+        Text(stringResource(R.string.sheets_scanning_softly), style = ty.titleLargeEmphasized)
         Text(vt.note, style = ty.bodyMedium, color = cs.onSurfaceVariant, textAlign = TextAlign.Center)
         LinearWavyProgressIndicator({ p }, Modifier.fillMaxWidth())
         Surface(shape = RoundedCornerShape(16.dp), color = cs.secondaryContainer) {
             AnimatedContent(tip, Modifier.fillMaxWidth().padding(14.dp), label = "tip") { Text(VT_TIPS[it], style = ty.bodyMedium, textAlign = TextAlign.Center) }
         }
-        Text("Keep this open. VirusTotal can take a little while when a fresh APK needs analysis.", style = ty.bodySmall, color = cs.onSurfaceVariant, textAlign = TextAlign.Center)
+        Text(stringResource(R.string.sheets_keep_this_open_virustotal_can_take), style = ty.bodySmall, color = cs.onSurfaceVariant, textAlign = TextAlign.Center)
     }
 }
 
@@ -575,7 +578,7 @@ private fun VtResults(r: VtResult, onCopy: () -> Unit, onReport: () -> Unit, onA
     Lead(k.label, k.note, "VirusTotal result", k.color, center = true) { Blob(k.icon, k.color, 88, MaterialShapes.Cookie9Sided) }
     Surface(shape = RoundedCornerShape(28.dp), color = k.color.copy(.12f)) {
         Column(Modifier.fillMaxWidth().padding(20.dp)) {
-            Text("Harmful rate", style = ty.labelLarge, color = cs.onSurfaceVariant)
+            Text(stringResource(R.string.sheets_harmful_rate), style = ty.labelLarge, color = cs.onSurfaceVariant)
             Text("$rate%", style = ty.displayMediumEmphasized, color = k.color)
             LinearProgressIndicator({ rate / 100f }, Modifier.fillMaxWidth().padding(top = 8.dp), color = k.color, trackColor = k.color.copy(.2f))
         }
@@ -593,9 +596,9 @@ private fun VtResults(r: VtResult, onCopy: () -> Unit, onReport: () -> Unit, onA
     Surface(shape = RoundedCornerShape(20.dp), color = cs.surfaceContainerHigh) {
         Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Eyebrow("How to read it", cs.onSurfaceVariant)
-            Text("0 detections: generally safe.", style = ty.bodyMedium)
-            Text("1-4 detections: often false positives.", style = ty.bodyMedium)
-            Text("5+ detections: high caution.", style = ty.bodyMedium)
+            Text(stringResource(R.string.sheets_0_detections_generally_safe), style = ty.bodyMedium)
+            Text(stringResource(R.string.sheets_1_4_detections_often_false_positives), style = ty.bodyMedium)
+            Text(stringResource(R.string.sheets_5_detections_high_caution), style = ty.bodyMedium)
         }
     }
     if (detections.isNotEmpty()) Column {
@@ -610,8 +613,8 @@ private fun VtResults(r: VtResult, onCopy: () -> Unit, onReport: () -> Unit, onA
     if (r.hash != null) CtaButton("Copy SHA-256", { clip.setText(AnnotatedString(r.hash)); onCopy() }, icon = Sym.ContentCopy, tonal = true)
     if (r.permalink != null) CtaButton("Open VirusTotal Report", onReport, icon = Sym.OpenInNew)
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        OutlinedButton(onAgain, modifier = Modifier.weight(1f), shapes = ButtonDefaults.shapes()) { Text("Scan Again") }
-        TextButton(onClose, modifier = Modifier.weight(1f), shapes = ButtonDefaults.shapes()) { Text("Close") }
+        OutlinedButton(onAgain, modifier = Modifier.weight(1f), shapes = ButtonDefaults.shapes()) { Text(stringResource(R.string.settings_scan_again)) }
+        TextButton(onClose, modifier = Modifier.weight(1f), shapes = ButtonDefaults.shapes()) { Text(stringResource(R.string.ui_text_static_069)) }
     }
 }
 
@@ -672,7 +675,7 @@ fun ChangeRequestSheet(vm: MainViewModel, app: AppItem, onDismiss: () -> Unit) =
                     GroupItem(1, 2, onClick = { showCurrent = !showCurrent }) {
                         Column(Modifier.animateContentSize(MaterialTheme.motionScheme.defaultSpatialSpec()).padding(horizontal = 16.dp, vertical = 12.dp)) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text("Current value", Modifier.weight(1f), style = ty.labelLarge, color = cs.onSurfaceVariant)
+                                Text(stringResource(R.string.sheets_current_value), Modifier.weight(1f), style = ty.labelLarge, color = cs.onSurfaceVariant)
                                 Icon(if (showCurrent) Sym.ExpandLess else Sym.ExpandMore, null, tint = cs.onSurfaceVariant)
                             }
                             if (showCurrent) Text(current.take(1000), Modifier.padding(top = 6.dp), style = ty.bodySmall, fontFamily = FontFamily.Monospace)
@@ -680,12 +683,12 @@ fun ChangeRequestSheet(vm: MainViewModel, app: AppItem, onDismiss: () -> Unit) =
                     }
                 }
                 val multi = f.kind == "textarea" || f.kind == "urls"; val urlKind = f.kind == "url" || f.kind == "urls"
-                OutlinedTextField(value, { value = it.take(4000); err = "" }, Modifier.fillMaxWidth(), label = { Text("Correct value") }, shape = RoundedCornerShape(16.dp),
+                OutlinedTextField(value, { value = it.take(4000); err = "" }, Modifier.fillMaxWidth(), label = { Text(stringResource(R.string.sheets_correct_value)) }, shape = RoundedCornerShape(16.dp),
                     placeholder = { Text(if (f.kind == "urls") "https://image.example/one.png\nhttps://image.example/two.png" else f.hint) },
                     singleLine = !multi, minLines = if (multi) 4 else 1, keyboardOptions = KeyboardOptions(keyboardType = if (urlKind) KeyboardType.Uri else KeyboardType.Text))
-                OutlinedTextField(reason, { reason = it.take(4000) }, Modifier.fillMaxWidth(), label = { Text("Reason") }, placeholder = { Text("Why is this correction needed?") },
+                OutlinedTextField(reason, { reason = it.take(4000) }, Modifier.fillMaxWidth(), label = { Text(stringResource(R.string.ui_text_static_070)) }, placeholder = { Text(stringResource(R.string.sheets_why_is_this_correction_needed)) },
                     minLines = 3, shape = RoundedCornerShape(16.dp))
-                OutlinedTextField(ref, { ref = it; err = "" }, Modifier.fillMaxWidth(), label = { Text("Evidence link (optional)") }, placeholder = { Text("Release page or official source") },
+                OutlinedTextField(ref, { ref = it; err = "" }, Modifier.fillMaxWidth(), label = { Text(stringResource(R.string.sheets_evidence_link_optional)) }, placeholder = { Text(stringResource(R.string.sheets_release_page_or_official_source)) },
                     singleLine = true, shape = RoundedCornerShape(16.dp), leadingIcon = { Icon(Sym.Link, null) }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri))
                 AnimatedVisibility(err.isNotEmpty()) {
                     Surface(shape = RoundedCornerShape(16.dp), color = cs.errorContainer, contentColor = cs.onErrorContainer) {
@@ -695,7 +698,7 @@ fun ChangeRequestSheet(vm: MainViewModel, app: AppItem, onDismiss: () -> Unit) =
                     }
                 }
                 CtaButton("Prepare App Update Issue", ::submit, icon = Sym.Description)
-                Text("+50 XP toward leaderboard", Modifier.fillMaxWidth(), style = ty.labelLarge, color = cs.tertiary, textAlign = TextAlign.Center)
+                Text(stringResource(R.string.sheets_50_xp_toward_leaderboard), Modifier.fillMaxWidth(), style = ty.labelLarge, color = cs.tertiary, textAlign = TextAlign.Center)
             }
         }
     }
@@ -725,16 +728,16 @@ fun WelcomeSheet(vm: MainViewModel) = OrionSheet(vm::finishWelcome) {
                 Icon(androidx.compose.ui.res.painterResource(com.orion.store.R.drawable.ic_splash_logo), null, Modifier.size(84.dp), tint = cs.onPrimaryContainer)
             }
             Surface(Modifier.offset(y = 10.dp).graphicsLayer { scaleX = pulse; scaleY = pulse }, shape = Pill, color = cs.tertiary, contentColor = cs.onTertiary) {
-                Text("RE", Modifier.padding(horizontal = 18.dp, vertical = 4.dp), style = ty.labelLargeEmphasized, letterSpacing = 3.sp)
+                Text(stringResource(R.string.ui_text_static_071), Modifier.padding(horizontal = 18.dp, vertical = 4.dp), style = ty.labelLargeEmphasized, letterSpacing = 3.sp)
             }
         }
-        Text("Orion Store 2.0 · Native", Modifier.padding(top = 28.dp).reveal(0), style = ty.labelLarge, color = cs.primary)
-        Text("Native at last", Modifier.reveal(1), style = ty.displaySmallEmphasized, textAlign = TextAlign.Center)
-        Text("The web app you knew has been rebuilt from the ground up as a real Android app. Same Orion, brand new engine.",
+        Text(stringResource(R.string.sheets_orion_store_2_0_native), Modifier.padding(top = 28.dp).reveal(0), style = ty.labelLarge, color = cs.primary)
+        Text(stringResource(R.string.sheets_native_at_last), Modifier.reveal(1), style = ty.displaySmallEmphasized, textAlign = TextAlign.Center)
+        Text(stringResource(R.string.sheets_the_web_app_you_knew_has),
             Modifier.padding(top = 8.dp).reveal(2), style = ty.bodyLarge, color = cs.onSurfaceVariant, textAlign = TextAlign.Center)
         Column(Modifier.padding(top = 20.dp).fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(2.dp)) {
             WELCOME_POINTS.forEachIndexed { i, (icon, title, desc) ->
-                ListItem({ Text(title, style = ty.titleMedium) }, Modifier.reveal(3 + i).clip(colShape(i, WELCOME_POINTS.size)),
+                ListItem({ Text(uiText(title), style = ty.titleMedium) }, Modifier.reveal(3 + i).clip(colShape(i, WELCOME_POINTS.size)),
                     supportingContent = { Text(desc) }, leadingContent = { TonalIcon(icon, cs.primary) },
                     colors = ListItemDefaults.colors(containerColor = cs.surfaceContainer))
             }
@@ -742,7 +745,7 @@ fun WelcomeSheet(vm: MainViewModel) = OrionSheet(vm::finishWelcome) {
         AnimatedVisibility(vm.migratedFromWeb) {
             Row(Modifier.padding(top = 12.dp).fillMaxWidth().clip(RoundedCornerShape(20.dp)).background(cs.tertiaryContainer).padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                 Icon(Sym.CheckCircle, null, tint = cs.onTertiaryContainer); Spacer(Modifier.width(12.dp))
-                Text("Your profile, badges and settings came along from the web app.", style = ty.bodyMedium, color = cs.onTertiaryContainer)
+                Text(stringResource(R.string.sheets_your_profile_badges_and_settings_came), style = ty.bodyMedium, color = cs.onTertiaryContainer)
             }
         }
         CtaButton("Let's go", close, Modifier.padding(top = 20.dp).reveal(8), icon = Sym.RocketLaunch)

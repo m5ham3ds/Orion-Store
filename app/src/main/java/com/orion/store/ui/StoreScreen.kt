@@ -1,5 +1,8 @@
 package com.orion.store.ui
 
+import androidx.compose.ui.res.stringResource
+import com.orion.store.R
+
 import androidx.compose.animation.*
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateDpAsState
@@ -128,7 +131,7 @@ fun StoreSkeleton(modern: Boolean) = Column(Modifier.fillMaxWidth().padding(top 
 
 @Composable
 private fun MoreButton(label: String, onClick: () -> Unit) = Box(Modifier.fillMaxWidth().padding(16.dp), contentAlignment = Alignment.Center) {
-    FilledTonalButton(onClick, shapes = ButtonDefaults.shapes()) { Text(label); Spacer(Modifier.width(6.dp)); Icon(Sym.ArrowForward, null, Modifier.size(18.dp)) }
+    FilledTonalButton(onClick, shapes = ButtonDefaults.shapes()) { Text(uiText(label)); Spacer(Modifier.width(6.dp)); Icon(Sym.ArrowForward, null, Modifier.size(18.dp)) }
 }
 
 @Composable
@@ -161,7 +164,7 @@ private fun Filters(vm: MainViewModel, ts: TabViewState, cats: List<String>, cou
             if (!modern || Device.isTv) IconButton(vm::reload, enabled = !vm.refreshing) { if (vm.refreshing) LoadingIndicator(Modifier.size(24.dp)) else Icon(Sym.Refresh, "Refresh") }
             vm.submissionCooldown?.let { AssistChip({}, { Text(it) }, leadingIcon = { Icon(Sym.Schedule, null, Modifier.size(16.dp)) }, enabled = false) }
                 ?: TextButton({ vm.open(Overlay.SUBMISSION) }, shapes = ButtonDefaults.shapes()) {
-                    Icon(Sym.AddCircleOutline, null, Modifier.size(18.dp)); Spacer(Modifier.width(6.dp)); Text("Submit app")
+                    Icon(Sym.AddCircleOutline, null, Modifier.size(18.dp)); Spacer(Modifier.width(6.dp)); Text(stringResource(R.string.store_submit_app))
                 }
         }
     }
@@ -173,7 +176,7 @@ fun Choice(on: Boolean, label: String, icon: androidx.compose.ui.graphics.vector
     val vm = LocalVm.current
     ToggleButton(on, { vm.haptic(H.SELECTION); onClick() }, shapes = ToggleButtonDefaults.shapesFor(ToggleButtonDefaults.size),
         icon = icon?.let { { Icon(it, null, Modifier.size(ToggleButtonDefaults.IconSize)) } }) {
-        Text(label, maxLines = 1)
+        Text(uiText(label), maxLines = 1)
     }
 }
 
@@ -183,7 +186,7 @@ private fun SortButton(vm: MainViewModel, opts: List<SortOption>) {
     Box {
         FilledTonalIconButton({ open = true }, shapes = IconButtonDefaults.shapes()) { Icon(Sym.SwapVert, "Sort Apps") }
         DropdownMenu(open, { open = false }, shape = RoundedCornerShape(20.dp)) {
-            Text("Sort by", Modifier.padding(horizontal = 16.dp, vertical = 8.dp), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(stringResource(R.string.store_sort_by), Modifier.padding(horizontal = 16.dp, vertical = 8.dp), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             opts.forEach { o ->
                 val on = vm.sortControl == o
                 DropdownMenuItem({ Text(o.label, fontWeight = if (on) FontWeight.Bold else null) }, { vm.sort(o); open = false; vm.haptic(H.SELECTION) },
@@ -320,7 +323,7 @@ private fun AboutPreview(text: String) {
     val cs = MaterialTheme.colorScheme
     var open by rememberSaveable(text) { mutableStateOf(false) }; var more by remember(text) { mutableStateOf(false) }
     Column(Modifier.padding(top = 4.dp).animateContentSize(MaterialTheme.motionScheme.defaultSpatialSpec())) {
-        Text(text, maxLines = if (open) 14 else 2, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant,
+        Text(uiText(text), maxLines = if (open) 14 else 2, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant,
             onTextLayout = { if (!open) more = it.hasVisualOverflow })
         if (more || open) Text(if (open) "See less" else "See more...", Modifier.padding(top = 2.dp).clip(Pill).clickable { open = !open }.padding(vertical = 4.dp, horizontal = 2.dp),
             style = MaterialTheme.typography.labelLarge, color = cs.primary)
@@ -441,7 +444,7 @@ private fun UpdateDeck(vm: MainViewModel, c: StoreCollection, modifier: Modifier
                 color = cs.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
         FilledTonalButton({ vm.haptic(H.MEDIUM); vm.updates.filter { it.installsHere() && it.platform == c.apps.firstOrNull()?.platform && it.id !in d.activeDownloads && it.id !in d.readyToInstall }.forEach { vm.download(it) } },
-            shapes = ButtonDefaults.shapes(), contentPadding = ButtonDefaults.SmallContentPadding) { Text("Update all") }
+            shapes = ButtonDefaults.shapes(), contentPadding = ButtonDefaults.SmallContentPadding) { Text(stringResource(R.string.store_update_all)) }
     }
 }
 
@@ -550,8 +553,8 @@ private fun Bundles(vm: MainViewModel, c: StoreCollection, modifier: Modifier) =
                         Icon(Sym.Add, null, tint = cs.onPrimaryContainer)
                     }
                 }
-                Text("Create bundle", Modifier.padding(start = 6.dp, top = 10.dp), style = MaterialTheme.typography.titleSmallEmphasized)
-                Text("Pick your own apps", Modifier.padding(horizontal = 6.dp), style = MaterialTheme.typography.labelMedium, color = cs.onSurfaceVariant)
+                Text(stringResource(R.string.store_create_bundle), Modifier.padding(start = 6.dp, top = 10.dp), style = MaterialTheme.typography.titleSmallEmphasized)
+                Text(stringResource(R.string.store_pick_your_own_apps), Modifier.padding(horizontal = 6.dp), style = MaterialTheme.typography.labelMedium, color = cs.onSurfaceVariant)
             }
         }
     }

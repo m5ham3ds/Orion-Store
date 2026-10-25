@@ -1,5 +1,8 @@
 package com.orion.store.ui
 
+import androidx.compose.ui.res.stringResource
+import com.orion.store.R
+
 import android.content.Intent
 import android.net.Uri
 import android.provider.OpenableColumns
@@ -71,6 +74,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.graphics.shapes.RoundedPolygon
+import com.orion.store.Lang
+import com.orion.store.findActivity
 import com.orion.store.data.*
 import com.orion.store.platform.Installer
 import com.orion.store.platform.OrionAi
@@ -222,14 +227,14 @@ private val CATS = listOf(
 
 @Composable
 private fun Section(title: String, content: @Composable ColumnScope.() -> Unit) = Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-    Text(title, Modifier.padding(start = 16.dp, top = 8.dp, bottom = 10.dp), style = MaterialTheme.typography.titleSmallEmphasized, color = tonal(LocalAccent.current).second)
+    Text(uiText(title), Modifier.padding(start = 16.dp, top = 8.dp, bottom = 10.dp), style = MaterialTheme.typography.titleSmallEmphasized, color = tonal(LocalAccent.current).second)
     Column(Modifier.clip(RoundedCornerShape(28.dp)), verticalArrangement = Arrangement.spacedBy(2.dp), content = content)
 }
 
 @Composable
 private fun SRow(icon: ImageVector, title: String, desc: String? = null, enabled: Boolean = true, onClick: (() -> Unit)? = null, trailing: (@Composable () -> Unit)? = null) =
     ListItem(
-        { Text(title, style = MaterialTheme.typography.titleMedium) },
+        { Text(uiText(title), style = MaterialTheme.typography.titleMedium) },
         Modifier.clip(RoundedCornerShape(4.dp)).then(if (onClick != null) Modifier.clickable(enabled, onClick = onClick) else Modifier),
         supportingContent = desc?.let { { Text(it) } }, leadingContent = { TonalIcon(icon, LocalAccent.current) }, trailingContent = trailing,
         colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
@@ -257,7 +262,7 @@ private fun InfoCard(text: String, title: String? = null, icon: ImageVector = Sy
         Icon(icon, null, Modifier.size(20.dp), tint = fg); Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
             title?.let { Text(it, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = fg) }
-            Text(text, style = MaterialTheme.typography.bodySmall, color = fg.copy(.85f))
+            Text(uiText(text), style = MaterialTheme.typography.bodySmall, color = fg.copy(.85f))
             action?.invoke()
         }
     }
@@ -270,7 +275,7 @@ private fun Selectable(selected: Boolean, title: String, meta: String? = null, o
         color = if (selected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerHigh) {
         Row(Modifier.padding(18.dp), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
-                Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Text(uiText(title), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                 meta?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary) }
             }
             if (selected) Icon(Sym.CheckCircle, null, tint = MaterialTheme.colorScheme.primary) else Icon(Sym.KeyboardArrowRight, null)
@@ -299,7 +304,7 @@ private fun QuickTile(icon: ImageVector, label: String, on: Boolean, modifier: M
         Icon(icon, null, Modifier.size(24.dp).graphicsLayer { scaleX = bounce.value; scaleY = bounce.value }, tint = fg)
         Spacer(Modifier.width(12.dp))
         Column {
-            Text(label, style = MaterialTheme.typography.titleSmall, color = fg, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(uiText(label), style = MaterialTheme.typography.titleSmall, color = fg, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Text(state, style = MaterialTheme.typography.labelMedium, color = fg.copy(.75f), maxLines = 1)
         }
     }
@@ -375,7 +380,7 @@ fun SettingsScreen(vm: MainViewModel) {
                                     catch (_: Exception) { importStatus = "Corrupt or incompatible save file." to "error"; vm.haptic(H.ERROR) }
                                 }
                             }, modifier = Modifier.weight(1f).heightIn(min = 64.dp), shapes = ButtonDefaults.shapes()) {
-                                Icon(Sym.FileDownload, null); Spacer(Modifier.width(8.dp)); Column { Text("Restore", fontWeight = FontWeight.Bold); Text("Import a save", style = MaterialTheme.typography.labelSmall) }
+                                Icon(Sym.FileDownload, null); Spacer(Modifier.width(8.dp)); Column { Text(stringResource(R.string.ui_text_static_054), fontWeight = FontWeight.Bold); Text(stringResource(R.string.settings_import_a_save), style = MaterialTheme.typography.labelSmall) }
                             }
                         }
                         AnimatedVisibility(importStatus.first.isNotEmpty()) {
@@ -437,7 +442,7 @@ fun SettingsScreen(vm: MainViewModel) {
                             shizukuError?.let { Text(it, Modifier.fillMaxWidth().clip(RoundedCornerShape(4.dp)).background(MaterialTheme.colorScheme.errorContainer).padding(16.dp),
                                 color = MaterialTheme.colorScheme.onErrorContainer, fontWeight = FontWeight.Bold) }
                             InfoCard("Silent installs require Shizuku to be installed and running.") {
-                                TextButton({ vm.navigateFromSettings("shizuku") }, contentPadding = PaddingValues(0.dp)) { Text("Get Shizuku") }
+                                TextButton({ vm.navigateFromSettings("shizuku") }, contentPadding = PaddingValues(0.dp)) { Text(stringResource(R.string.settings_get_shizuku)) }
                             }
                         }
                         Section("Root") {
@@ -462,7 +467,7 @@ fun SettingsScreen(vm: MainViewModel) {
                     "storage" -> {
                         StatHero("${d.pendingCleanup.size}", if (d.pendingCleanup.size == 1) "APK waiting for cleanup" else "APKs waiting for cleanup") {
                             if (d.pendingCleanup.isNotEmpty()) Button({ vm.batchCleanup(); vm.haptic(H.SUCCESS) }, shapes = ButtonDefaults.shapes()) {
-                                Icon(Sym.CleaningServices, null); Spacer(Modifier.width(8.dp)); Text("Clean now")
+                                Icon(Sym.CleaningServices, null); Spacer(Modifier.width(8.dp)); Text(stringResource(R.string.settings_clean_now))
                             }
                         }
                         Section("Janitor") {
@@ -480,10 +485,10 @@ fun SettingsScreen(vm: MainViewModel) {
                             d.readyToInstall.forEach { (id, file) ->
                                 val a = app(id)
                                 ListItem({ Text(a?.name ?: id, style = MaterialTheme.typography.titleMedium) }, Modifier.clip(RoundedCornerShape(4.dp)).clickable { a?.let { vm.navigateFromSettings(it.id) } },
-                                    supportingContent = { Text("Ready to install") }, leadingContent = { a?.let { AppIcon(it, 44.dp) } ?: TonalIcon(Sym.Inventory, Safe) },
+                                    supportingContent = { Text(stringResource(R.string.logic_ready_to_install)) }, leadingContent = { a?.let { AppIcon(it, 44.dp) } ?: TonalIcon(Sym.Inventory, Safe) },
                                     trailingContent = {
                                         if (vm.installingId == id) LoadingIndicator(Modifier.size(32.dp))
-                                        else Button({ a?.let { vm.installFile(it, file) } }, shapes = ButtonDefaults.shapes(), contentPadding = ButtonDefaults.SmallContentPadding) { Text("Install") }
+                                        else Button({ a?.let { vm.installFile(it, file) } }, shapes = ButtonDefaults.shapes(), contentPadding = ButtonDefaults.SmallContentPadding) { Text(stringResource(R.string.ui_text_static_014)) }
                                     }, colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainer))
                             }
                             d.activeDownloads.keys.forEach { id ->
@@ -501,7 +506,7 @@ fun SettingsScreen(vm: MainViewModel) {
                             vm.updates.filter { it.id !in d.activeDownloads && it.id !in d.readyToInstall }.forEach { a ->
                                 ListItem({ Text(a.name, style = MaterialTheme.typography.titleMedium) }, Modifier.clip(RoundedCornerShape(4.dp)).clickable { vm.navigateFromSettings(a.id) },
                                     supportingContent = { Text("Update to v${a.latestVersion}") }, leadingContent = { AppIcon(a, 44.dp) },
-                                    trailingContent = { FilledTonalButton({ vm.download(a) }, shapes = ButtonDefaults.shapes(), contentPadding = ButtonDefaults.SmallContentPadding) { Text("Update") } },
+                                    trailingContent = { FilledTonalButton({ vm.download(a) }, shapes = ButtonDefaults.shapes(), contentPadding = ButtonDefaults.SmallContentPadding) { Text(stringResource(R.string.ui_text_static_015)) } },
                                     colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainer))
                             }
                         }
@@ -512,10 +517,10 @@ fun SettingsScreen(vm: MainViewModel) {
                         Section("Color & type") {
                             Toggle(Sym.AutoAwesome, "Material You", "Dynamic wallpaper colors (Android 12+)", s.materialYouEnabled) { vm.set { it.copy(materialYouEnabled = !it.materialYouEnabled) } }
                             SRow(Sym.FontDownload, "Font", fontLabel(s), onClick = { fontError = null; picker = "font" }) {
-                                Row(verticalAlignment = Alignment.CenterVertically) { Text("Aa", style = MaterialTheme.typography.headlineSmallEmphasized); Chevron() }
+                                Row(verticalAlignment = Alignment.CenterVertically) { Text(stringResource(R.string.ui_text_static_055), style = MaterialTheme.typography.headlineSmallEmphasized); Chevron() }
                             }
                         }
-                        Text("Performance", Modifier.padding(start = 32.dp, top = 16.dp, bottom = 2.dp), style = MaterialTheme.typography.titleSmallEmphasized, color = tonal(LocalAccent.current).second)
+                        Text(stringResource(R.string.ui_text_static_056), Modifier.padding(start = 32.dp, top = 16.dp, bottom = 2.dp), style = MaterialTheme.typography.titleSmallEmphasized, color = tonal(LocalAccent.current).second)
                         Text(if (s.perfMode == "auto") "Auto picks ${s.perf.replaceFirstChar { it.uppercase() }} for this phone. Lite stops decorative motion, Boost keeps more images ready."
                             else "Lite stops decorative motion, Boost keeps more images ready. Image changes apply after a restart.", Modifier.padding(horizontal = 32.dp),
                             style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -525,7 +530,7 @@ fun SettingsScreen(vm: MainViewModel) {
                             modes.forEachIndexed { i, (id, label) ->
                                 ToggleButton(s.perfMode == id, { vm.haptic(H.SELECTION); vm.set { it.copy(perfMode = id) } }, Modifier.weight(if (id == "balanced") 1.3f else 1f),
                                     shapes = when (i) { 0 -> ButtonGroupDefaults.connectedLeadingButtonShapes(); modes.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes(); else -> ButtonGroupDefaults.connectedMiddleButtonShapes() },
-                                    contentPadding = PaddingValues(horizontal = 4.dp)) { Text(label, maxLines = 1) }
+                                    contentPadding = PaddingValues(horizontal = 4.dp)) { Text(uiText(label), maxLines = 1) }
                             }
                         }
                         Section("Motion & feel") {
@@ -643,16 +648,36 @@ private fun PageFooter(cat: Cat) {
 @Composable
 private fun Hub(vm: MainViewModel, s: Settings, d: DataState, active: Int, ready: Int, pending: Int, shared: @Composable (Cat) -> Modifier) {
     val cs = MaterialTheme.colorScheme
+    val context = LocalContext.current
+    var showLanguage by remember { mutableStateOf(false) }
+    val arabic = Lang.isArabic(context)
     fun cat(id: String) = CATS.first { it.id == id }
     Column(Modifier.fillMaxSize().background(cs.surface).verticalScroll(rememberScrollState()).readableWidth().windowInsetsPadding(WindowInsets.statusBarsIgnoringVisibility).padding(bottom = 32.dp)) {
         Column(Modifier.padding(start = 24.dp, end = 24.dp, top = 24.dp)) {
-            Text("Settings", style = MaterialTheme.typography.displaySmallEmphasized)
+            Text(if (arabic) "الإعدادات" else "Settings", style = MaterialTheme.typography.displaySmallEmphasized)
             Text("Orion Store v$STORE_VERSION · ${vm.allApps().size} apps in catalog", style = MaterialTheme.typography.bodyMedium, color = cs.onSurfaceVariant)
         }
+        OutlinedButton(onClick = { showLanguage = true }, modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)) {
+            Text(if (arabic) "اللغة · العربية" else "Language · English")
+        }
+        if (showLanguage) AlertDialog(
+            onDismissRequest = { showLanguage = false },
+            title = { Text(if (arabic) "لغة التطبيق" else "App language") },
+            text = { Column {
+                listOf("" to (if (arabic) "افتراضي النظام" else "System default"), "en" to "English", "ar" to "العربية").forEach { (tag, label) ->
+                    TextButton(onClick = {
+                        showLanguage = false
+                        Lang.set(context, tag)
+                        if (android.os.Build.VERSION.SDK_INT < 33) context.findActivity()?.recreate()
+                    }, modifier = Modifier.fillMaxWidth()) { Text(uiText(label)) }
+                }
+            } },
+            confirmButton = { TextButton(onClick = { showLanguage = false }) { Text(if (arabic) "إغلاق" else "Close") } }
+        )
         var editing by remember { mutableStateOf(false) }
-        HubHeader("Quick toggles") { IconButton({ editing = true }) { Icon(Sym.Edit, "Edit quick toggles", tint = cs.primary) } }
+        HubHeader(if (arabic) "اختصارات سريعة" else "Quick toggles") { IconButton({ editing = true }) { Icon(Sym.Edit, "Edit quick toggles", tint = cs.primary) } }
         val quick = (s.quickTiles ?: DEFAULT_QUICK).mapNotNull { id -> QUICK.firstOrNull { it.id == id && it.shown(s) } }
-        if (quick.isEmpty()) Text("No quick toggles. Tap the pencil to add your favorites.", Modifier.padding(horizontal = 24.dp), style = MaterialTheme.typography.bodyMedium, color = cs.onSurfaceVariant)
+        if (quick.isEmpty()) Text(stringResource(R.string.settings_no_quick_toggles_tap_the_pencil), Modifier.padding(horizontal = 24.dp), style = MaterialTheme.typography.bodyMedium, color = cs.onSurfaceVariant)
         quick.chunked(2).forEach { row ->
             Row(Modifier.padding(horizontal = 16.dp, vertical = 4.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 row.forEach { q -> QuickTile(q.icon, q.label, q.get(s), Modifier.weight(1f)) { vm.haptic(H.SELECTION); vm.set(q.flip) } }
@@ -719,8 +744,8 @@ private fun Hub(vm: MainViewModel, s: Settings, d: DataState, active: Int, ready
                 }
             }
         }
-        HubHeader("Everything else", "Long-press a card to move it") {
-            if (s.settingsOrder.isNotEmpty()) TextButton({ vm.set { it.copy(settingsOrder = emptyList()) }; vm.haptic(H.MEDIUM) }) { Text("Reset") }
+        HubHeader(if (arabic) "باقي الإعدادات" else "Everything else", if (arabic) "اضغط مطولًا على بطاقة لتحريكها" else "Long-press a card to move it") {
+            if (s.settingsOrder.isNotEmpty()) TextButton({ vm.set { it.copy(settingsOrder = emptyList()) }; vm.haptic(H.MEDIUM) }) { Text(if (arabic) "إعادة ضبط" else "Reset") }
         }
         Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Slot(0, Modifier.zIndex(z(0)).fillMaxWidth().height(156.dp))
@@ -746,7 +771,7 @@ private fun Hub(vm: MainViewModel, s: Settings, d: DataState, active: Int, ready
 private fun HubHeader(title: String, hint: String? = null, action: @Composable () -> Unit) =
     Row(Modifier.fillMaxWidth().padding(start = 24.dp, end = 12.dp, top = 16.dp, bottom = 2.dp).heightIn(min = 48.dp), verticalAlignment = Alignment.CenterVertically) {
         Column(Modifier.weight(1f)) {
-            Text(title, style = MaterialTheme.typography.titleSmallEmphasized, color = MaterialTheme.colorScheme.primary)
+            Text(uiText(title), style = MaterialTheme.typography.titleSmallEmphasized, color = MaterialTheme.colorScheme.primary)
             hint?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
         }
         action()
@@ -778,6 +803,7 @@ private val DEFAULT_QUICK = listOf("autoUpdate", "wifiOnly", "haptics", "materia
 @Composable
 private fun QuickTilesSheet(vm: MainViewModel, s: Settings, onDismiss: () -> Unit) = OrionSheet(onDismiss) {
     val cs = MaterialTheme.colorScheme
+    val arabic = Lang.isArabic(LocalContext.current)
     fun pickedOf(st: Settings) = (st.quickTiles ?: DEFAULT_QUICK).filter { id -> QUICK.any { it.id == id && it.shown(st) } }
     val picked = pickedOf(s)
     var live by remember { mutableStateOf<List<String>?>(null) }; var dragging by remember { mutableStateOf<String?>(null) }
@@ -800,7 +826,7 @@ private fun QuickTilesSheet(vm: MainViewModel, s: Settings, onDismiss: () -> Uni
     fun toggle(id: String) { vm.haptic(H.SELECTION); vm.set { st -> pickedOf(st).let { cur -> st.copy(quickTiles = if (id in cur) cur - id else cur + id) } } }
     SheetTitle("Quick toggles", Sym.Edit, "Hold and drag to reorder. Tap to add or remove.")
     Column(Modifier.weight(1f, false).verticalScroll(rememberScrollState()).padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)) {
-        if (tiles.isNotEmpty()) Text("Your tiles", Modifier.padding(start = 8.dp, bottom = 4.dp), style = MaterialTheme.typography.titleSmallEmphasized, color = cs.primary)
+        if (tiles.isNotEmpty()) Text(stringResource(R.string.settings_your_tiles), Modifier.padding(start = 8.dp, bottom = 4.dp), style = MaterialTheme.typography.titleSmallEmphasized, color = cs.primary)
         tiles.forEachIndexed { i, id -> key(id) {
             val q = QUICK.first { it.id == id }
             SegmentedListItem({ toggle(id) }, ListItemDefaults.segmentedShapes(i, tiles.size),
@@ -811,23 +837,23 @@ private fun QuickTilesSheet(vm: MainViewModel, s: Settings, onDismiss: () -> Uni
                     },
                 colors = ListItemDefaults.segmentedColors(containerColor = if (dragging == id) cs.primaryContainer else cs.secondaryContainer),
                 leadingContent = { Icon(q.icon, null) }, trailingContent = { Icon(Sym.DragHandle, "Hold to move") }) {
-                Text(q.label, fontWeight = FontWeight.SemiBold)
+                Text(uiText(q.label), fontWeight = FontWeight.SemiBold)
             }
         } }
         val rest = QUICK.filter { it.shown(s) && it.id !in tiles }
-        if (rest.isNotEmpty()) Text("Add tiles", Modifier.padding(start = 8.dp, top = 12.dp, bottom = 4.dp), style = MaterialTheme.typography.titleSmallEmphasized, color = cs.primary)
+        if (rest.isNotEmpty()) Text(stringResource(R.string.settings_add_tiles), Modifier.padding(start = 8.dp, top = 12.dp, bottom = 4.dp), style = MaterialTheme.typography.titleSmallEmphasized, color = cs.primary)
         rest.forEachIndexed { i, q ->
             SegmentedListItem({ toggle(q.id) }, ListItemDefaults.segmentedShapes(i, rest.size), colors = ListItemDefaults.segmentedColors(containerColor = cs.surfaceContainerHigh),
                 leadingContent = { Icon(q.icon, null) }, trailingContent = { Icon(Sym.Add, "Add") }) {
-                Text(q.label, fontWeight = FontWeight.SemiBold)
+                Text(uiText(q.label), fontWeight = FontWeight.SemiBold)
             }
         }
     }
     Row(Modifier.fillMaxWidth().navigationBarsPadding().padding(16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         OutlinedButton({ vm.set { it.copy(quickTiles = null) }; vm.haptic(H.MEDIUM) }, modifier = Modifier.weight(1f), enabled = s.quickTiles != null, shapes = ButtonDefaults.shapes()) {
-            Icon(Sym.RestartAlt, null, Modifier.size(18.dp)); Spacer(Modifier.width(6.dp)); Text("Reset")
+            Icon(Sym.RestartAlt, null, Modifier.size(18.dp)); Spacer(Modifier.width(6.dp)); Text(if (arabic) "إعادة ضبط" else "Reset")
         }
-        Button(LocalSheetClose.current, modifier = Modifier.weight(1f), shapes = ButtonDefaults.shapes()) { Icon(Sym.Check, null, Modifier.size(18.dp)); Spacer(Modifier.width(6.dp)); Text("Done") }
+        Button(LocalSheetClose.current, modifier = Modifier.weight(1f), shapes = ButtonDefaults.shapes()) { Icon(Sym.Check, null, Modifier.size(18.dp)); Spacer(Modifier.width(6.dp)); Text(stringResource(R.string.ui_text_static_057)) }
     }
 }
 
@@ -845,8 +871,8 @@ private fun Bento(vm: MainViewModel, cat: Cat, shared: @Composable (Cat) -> Modi
                     badge?.let { Badge(containerColor = fg, contentColor = bg) { Text(it, Modifier.padding(horizontal = 4.dp)) } }
                 }
                 Spacer(Modifier.weight(1f))
-                Text(cat.title, style = MaterialTheme.typography.titleLargeEmphasized, maxLines = 1)
-                if (!compact) Text(cat.desc, style = MaterialTheme.typography.bodySmall, color = fg.copy(.8f), maxLines = 2)
+                Text(uiText(cat.title), style = MaterialTheme.typography.titleLargeEmphasized, maxLines = 1)
+                if (!compact) Text(uiText(cat.desc), style = MaterialTheme.typography.bodySmall, color = fg.copy(.8f), maxLines = 2)
                 extra()
             }
         }
@@ -868,8 +894,8 @@ private fun Page(cat: Cat, modifier: Modifier, onBack: () -> Unit, content: @Com
                         Spinner(cat.shape, fg.copy(.16f), 72.dp, periodMs = 18_000)
                         Icon(cat.icon, null, Modifier.size(34.dp), tint = fg)
                     }
-                    Text(cat.title, Modifier.padding(start = 24.dp, top = 16.dp), style = MaterialTheme.typography.displaySmallEmphasized)
-                    Text(cat.desc, Modifier.padding(start = 24.dp, end = 24.dp, top = 4.dp), style = MaterialTheme.typography.bodyLarge, color = cs.onSurfaceVariant)
+                    Text(uiText(cat.title), Modifier.padding(start = 24.dp, top = 16.dp), style = MaterialTheme.typography.displaySmallEmphasized)
+                    Text(uiText(cat.desc), Modifier.padding(start = 24.dp, end = 24.dp, top = 4.dp), style = MaterialTheme.typography.bodyLarge, color = cs.onSurfaceVariant)
                 }
             }
             Column(Modifier.reveal(1)) { content() }
@@ -950,7 +976,7 @@ private fun BackupNowRow(vm: MainViewModel, s: Settings, where: String?) {
     val container by animateColorAsState(if (p == BackupPhase.DONE) androidx.compose.ui.graphics.lerp(cs.surfaceContainer, tonal(Safe).first, .6f) else cs.surfaceContainer,
         MaterialTheme.motionScheme.slowEffectsSpec(), label = "row")
     ListItem(
-        { Text("Back up now", style = MaterialTheme.typography.titleMedium) },
+        { Text(stringResource(R.string.settings_back_up_now), style = MaterialTheme.typography.titleMedium) },
         Modifier.clip(RoundedCornerShape(4.dp)).clickable(p == BackupPhase.IDLE) {
             scope.backupRun(phase, vm) { val before = System.currentTimeMillis(); vm.cloudBackup(true).join(); vm.s.lastCloudBackup >= before }
         },
@@ -963,7 +989,7 @@ private fun BackupNowRow(vm: MainViewModel, s: Settings, where: String?) {
             AnimatedContent(p, transitionSpec = { (scaleIn(pop) + fadeIn()) togetherWith (scaleOut() + fadeOut()) }, label = "trail") {
                 when (it) {
                     BackupPhase.WORKING -> LoadingIndicator(Modifier.size(32.dp))
-                    BackupPhase.DONE -> Text("Saved", style = MaterialTheme.typography.labelLargeEmphasized, color = tonal(Safe).second)
+                    BackupPhase.DONE -> Text(stringResource(R.string.ui_text_static_058), style = MaterialTheme.typography.labelLargeEmphasized, color = tonal(Safe).second)
                     else -> Chevron()
                 }
             }
@@ -978,7 +1004,7 @@ private fun FeatureTile(icon: ImageVector, title: String, desc: String, c: Color
     Column(modifier.height(176.dp).springClick(RoundedCornerShape(28.dp), onClick = onClick).background(bg).padding(18.dp)) {
         Box(Modifier.size(52.dp), contentAlignment = Alignment.Center) { Spinner(shape, fg.copy(.16f), 52.dp, periodMs = 16_000); Icon(icon, null, tint = fg) }
         Spacer(Modifier.weight(1f))
-        Text(title, style = MaterialTheme.typography.titleLargeEmphasized, color = fg)
+        Text(uiText(title), style = MaterialTheme.typography.titleLargeEmphasized, color = fg)
         Text(desc, style = MaterialTheme.typography.bodySmall, color = fg.copy(.8f), maxLines = 2)
     }
 }
@@ -1036,7 +1062,7 @@ private fun PalettePicker(vm: MainViewModel, s: Settings) {
                 Box(Modifier.size(60.dp).springClick(MaterialShapes.Cookie9Sided.toShape()) { maker = null; making = true }.background(cs.primaryContainer), contentAlignment = Alignment.Center) {
                     Icon(Sym.Add, "Make a palette", tint = cs.onPrimaryContainer)
                 }
-                Text("Make", Modifier.padding(top = 8.dp), style = MaterialTheme.typography.labelLarge, color = cs.onSurfaceVariant)
+                Text(stringResource(R.string.ui_text_static_059), Modifier.padding(top = 8.dp), style = MaterialTheme.typography.labelLarge, color = cs.onSurfaceVariant)
             }
         }
         s.customPalettes.firstOrNull { it.id == s.palette && !s.materialYouEnabled }?.let { cp ->
@@ -1078,7 +1104,7 @@ private fun ThemePicker(vm: MainViewModel, s: Settings) {
                             Icon(Sym.Check, null, Modifier.size(12.dp), tint = MaterialTheme.colorScheme.onPrimary)
                         }
                     }
-                    Text(label, Modifier.padding(top = 8.dp), style = if (on) MaterialTheme.typography.labelLargeEmphasized else MaterialTheme.typography.labelLarge,
+                    Text(uiText(label), Modifier.padding(top = 8.dp), style = if (on) MaterialTheme.typography.labelLargeEmphasized else MaterialTheme.typography.labelLarge,
                         color = if (on) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
@@ -1110,7 +1136,7 @@ private fun LayoutPicker(vm: MainViewModel, s: Settings) = Section("Store layout
                 }
                 Row(Modifier.padding(top = 10.dp), verticalAlignment = Alignment.CenterVertically) {
                     RadioButton(on, null); Spacer(Modifier.width(6.dp))
-                    Text(label, style = MaterialTheme.typography.titleSmall)
+                    Text(uiText(label), style = MaterialTheme.typography.titleSmall)
                 }
             }
         }
@@ -1131,13 +1157,13 @@ private fun DockSize(vm: MainViewModel, s: Settings) = Section("Dock size") {
                     val on = i == 0
                     Row(Modifier.height(44.dp).clip(Pill).background(if (on) cs.secondaryContainer else Color.Transparent).padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically) {
                         Icon(ic, null, Modifier.size(20.dp), tint = if (on) cs.onSecondaryContainer else cs.onSurfaceVariant)
-                        if (on) Text("Apps", Modifier.padding(start = 6.dp), style = MaterialTheme.typography.labelLarge, color = cs.onSecondaryContainer)
+                        if (on) Text(stringResource(R.string.ui_text_static_045), Modifier.padding(start = 6.dp), style = MaterialTheme.typography.labelLarge, color = cs.onSecondaryContainer)
                     }
                 }
             }
         }
         Slider(scale, { v -> vm.set { it.copy(bottomNavScale = (v * 20).roundToInt() / 20f) } }, valueRange = .85f..1.15f, steps = 5)
-        Row { Text("Compact", Modifier.weight(1f), style = MaterialTheme.typography.labelMedium); Text("${(scale * 100).roundToInt()}%", style = MaterialTheme.typography.labelLargeEmphasized); Text("Large", Modifier.weight(1f), textAlign = androidx.compose.ui.text.style.TextAlign.End, style = MaterialTheme.typography.labelMedium) }
+        Row { Text(stringResource(R.string.settings_compact), Modifier.weight(1f), style = MaterialTheme.typography.labelMedium); Text("${(scale * 100).roundToInt()}%", style = MaterialTheme.typography.labelLargeEmphasized); Text(stringResource(R.string.ui_text_static_060), Modifier.weight(1f), textAlign = androidx.compose.ui.text.style.TextAlign.End, style = MaterialTheme.typography.labelMedium) }
     }
 }
 
@@ -1151,19 +1177,19 @@ private fun DevConfigEditor(vm: MainViewModel, s: Settings) = Section("Developer
         vm.set { it.copy(devConfigEnabled = !it.devConfigEnabled) }
     }
     Column(Modifier.clip(RoundedCornerShape(4.dp)).background(MaterialTheme.colorScheme.surfaceContainer).padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        OutlinedTextField(s.devConfigUrl, { v -> vm.set { it.copy(devConfigUrl = v) } }, Modifier.fillMaxWidth(), label = { Text("Dev config URL") },
-            placeholder = { Text("https://example.com/config.json") }, singleLine = true, shape = RoundedCornerShape(16.dp), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri))
+        OutlinedTextField(s.devConfigUrl, { v -> vm.set { it.copy(devConfigUrl = v) } }, Modifier.fillMaxWidth(), label = { Text(stringResource(R.string.settings_dev_config_url)) },
+            placeholder = { Text(stringResource(R.string.ui_text_static_061)) }, singleLine = true, shape = RoundedCornerShape(16.dp), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(vm::reload, modifier = Modifier.weight(1f), enabled = s.devConfigEnabled && url.isNotEmpty() && !loading, shapes = ButtonDefaults.shapes()) {
                 Text(if (loading) "Reloading..." else "Reload Dev Config")
             }
             OutlinedButton({ vm.set { it.copy(devConfigEnabled = false, devConfigUrl = "") }; vm.devStatus = "idle"; vm.devError = null; vm.reload() }, modifier = Modifier.weight(1f), shapes = ButtonDefaults.shapes()) {
-                Text("Disable and Clear")
+                Text(stringResource(R.string.settings_disable_and_clear))
             }
         }
         Text(if (s.devConfigEnabled) "Status: ${when (vm.devStatus) { "loading" -> "loading"; "loaded" -> "loaded"; "error" -> "failed"; else -> "idle" }}" else "Status: production mode",
             style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
-        if (s.devConfigEnabled && url.isEmpty()) Text("Enter a config URL to fully isolate testing from production config.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        if (s.devConfigEnabled && url.isEmpty()) Text(stringResource(R.string.settings_enter_a_config_url_to_fully), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         if (s.devConfigEnabled && vm.devStatus == "loaded") Text("Last loaded: $url", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         vm.devError?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error) }
     }
@@ -1176,14 +1202,14 @@ private fun FontSheet(vm: MainViewModel, s: Settings, error: String?, importing:
         item {
             Card(Modifier.fillMaxWidth().padding(bottom = 10.dp), shape = RoundedCornerShape(28.dp), colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primaryContainer)) {
                 Column(Modifier.padding(20.dp)) {
-                    Text("Aa Bb Gg 123", style = MaterialTheme.typography.displaySmallEmphasized)
-                    Text("The quick brown fox jumps over the lazy dog.", style = MaterialTheme.typography.bodyLarge)
+                    Text(stringResource(R.string.settings_aa_bb_gg_123), style = MaterialTheme.typography.displaySmallEmphasized)
+                    Text(stringResource(R.string.settings_the_quick_brown_fox_jumps_over), style = MaterialTheme.typography.bodyLarge)
                 }
             }
         }
         @Composable fun FontRow(key: String, label: String, tag: String?, onDelete: (() -> Unit)? = null) {
             val on = s.appFont == key
-            ListItem({ Text(label, fontWeight = if (on) FontWeight.Black else FontWeight.Medium) },
+            ListItem({ Text(uiText(label), fontWeight = if (on) FontWeight.Black else FontWeight.Medium) },
                 Modifier.clip(RoundedCornerShape(if (on) 24.dp else 8.dp)).clickable { vm.haptic(H.SELECTION); vm.set { it.copy(appFont = key) } },
                 supportingContent = tag?.let { { Text(it) } },
                 trailingContent = { Row(verticalAlignment = Alignment.CenterVertically) {
@@ -1200,8 +1226,8 @@ private fun FontSheet(vm: MainViewModel, s: Settings, error: String?, importing:
             }
             error?.let { Text(it, Modifier.padding(8.dp), color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
             Row(Modifier.padding(top = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-                Text("Active: ", style = MaterialTheme.typography.bodySmall); Text(fontLabel(s), Modifier.weight(1f), fontWeight = FontWeight.Bold)
-                Button(onDismiss, shapes = ButtonDefaults.shapes()) { Text("Done") }
+                Text(stringResource(R.string.ui_text_static_062), style = MaterialTheme.typography.bodySmall); Text(fontLabel(s), Modifier.weight(1f), fontWeight = FontWeight.Bold)
+                Button(onDismiss, shapes = ButtonDefaults.shapes()) { Text(stringResource(R.string.ui_text_static_057)) }
             }
         }
     }
@@ -1224,8 +1250,8 @@ private fun DirectInstallSheet(vm: MainViewModel, onDismiss: () -> Unit) = Orion
     LaunchedEffect(Unit) { while (true) { delay(1000); wifi = WirelessAdb.onWifi(ctx); dev = WirelessAdb.devOptions(ctx); wl = WirelessAdb.wirelessOn(ctx) } }
 
     Column(Modifier.padding(horizontal = 16.dp).verticalScroll(rememberScrollState())) {
-        Text("Skip the 24-hour wait", Modifier.padding(horizontal = 8.dp), style = MaterialTheme.typography.headlineSmallEmphasized)
-        Text("One-time setup. Orion installs through Wireless debugging, the ADB route Google leaves open, so apps install right away.",
+        Text(stringResource(R.string.guide_skip_the_24_hour_wait), Modifier.padding(horizontal = 8.dp), style = MaterialTheme.typography.headlineSmallEmphasized)
+        Text(stringResource(R.string.settings_one_time_setup_orion_installs_through),
             Modifier.padding(horizontal = 8.dp).padding(top = 4.dp, bottom = 16.dp), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Column(Modifier.clip(RoundedCornerShape(24.dp)), verticalArrangement = Arrangement.spacedBy(2.dp)) {
             SetupStep(1, "Connect to Wi-Fi", if (wifi) "Connected" else "Wireless debugging only works on Wi-Fi.", wifi)
@@ -1233,7 +1259,7 @@ private fun DirectInstallSheet(vm: MainViewModel, onDismiss: () -> Unit) = Orion
             SetupStep(3, "Turn on Wireless debugging", if (wl) "On" else "Switch it on and tap Allow.", wl)
             SetupStep(4, "Pair Orion", "Tap Pair device with pairing code, then type the code into Orion's notification.", st.phase == WirelessAdb.Phase.READY)
         }
-        Text("Orion's notification walks you through each step and moves on by itself.", Modifier.padding(8.dp),
+        Text(stringResource(R.string.ui_text_static_063), Modifier.padding(8.dp),
             style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Button(onClick = { WirelessAdb.startSetup(ctx) }, modifier = Modifier.fillMaxWidth(), enabled = wifi && st.phase != WirelessAdb.Phase.PAIRING, shapes = ButtonDefaults.shapes()) {
             Text(if (st.phase == WirelessAdb.Phase.IDLE) "Start setup" else "Continue")
@@ -1243,15 +1269,15 @@ private fun DirectInstallSheet(vm: MainViewModel, onDismiss: () -> Unit) = Orion
             Text(st.msg, color = if (st.phase == WirelessAdb.Phase.FAILED) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface)
         }
         OutlinedTextField(code, { code = it.filter(Char::isDigit).take(6) }, Modifier.fillMaxWidth().padding(top = 12.dp), singleLine = true,
-            label = { Text("Or type the code here (split screen)") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
-            trailingIcon = { TextButton({ WirelessAdb.pairAsync(ctx, code) }, enabled = code.length == 6 && st.phase != WirelessAdb.Phase.PAIRING) { Text("Pair") } })
+            label = { Text(stringResource(R.string.settings_or_type_the_code_here_split)) }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+            trailingIcon = { TextButton({ WirelessAdb.pairAsync(ctx, code) }, enabled = code.length == 6 && st.phase != WirelessAdb.Phase.PAIRING) { Text(stringResource(R.string.ui_text_static_064)) } })
     }
     Spacer(Modifier.navigationBarsPadding().height(16.dp))
 }
 
 @Composable
 private fun SetupStep(n: Int, title: String, desc: String, done: Boolean, action: (@Composable () -> Unit)? = null) = ListItem(
-    { Text(title, style = MaterialTheme.typography.titleMedium) },
+    { Text(uiText(title), style = MaterialTheme.typography.titleMedium) },
     supportingContent = { Column { Text(desc); action?.invoke() } },
     leadingContent = {
         if (done) TonalIcon(Sym.Check, Green)
@@ -1266,7 +1292,7 @@ private fun SetupStep(n: Int, title: String, desc: String, done: Boolean, action
 private fun InstallerSheet(vm: MainViewModel, s: Settings, step: String, setStep: (String) -> Unit, list: List<Installer>, loading: Boolean, error: String?, onDismiss: () -> Unit) = OrionSheet(onDismiss) {
     Row(Modifier.padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically) {
         BackHandler(step == "specific") { setStep("mode") }
-        Text("Choose Installer", Modifier.weight(1f).padding(start = 12.dp), style = MaterialTheme.typography.headlineSmallEmphasized)
+        Text(stringResource(R.string.settings_choose_installer), Modifier.weight(1f).padding(start = 12.dp), style = MaterialTheme.typography.headlineSmallEmphasized)
         if (step == "specific" && s.hiddenInstallers.isNotEmpty()) IconButton({ vm.set { it.copy(hiddenInstallers = emptyList()) } }) { Icon(Sym.RestartAlt, "Reset Hidden Installers") }
     }
     AnimatedContent(step, label = "step") { st ->
@@ -1276,7 +1302,7 @@ private fun InstallerSheet(vm: MainViewModel, s: Settings, step: String, setStep
                 Selectable(s.installerPreference == "chooser", "Ask Every Time") { vm.set { it.withInstaller("chooser") }; onDismiss() }
                 Selectable(s.installerPreference == "package", "Specific Installer", if (s.installerPreference == "package") s.installerLabel.ifEmpty { "Selected" } else null) { setStep("specific") }
             } else when {
-                loading -> Row(Modifier.fillMaxWidth().padding(24.dp), horizontalArrangement = Arrangement.Center) { LoadingIndicator(); Text("Loading...", Modifier.padding(start = 12.dp)) }
+                loading -> Row(Modifier.fillMaxWidth().padding(24.dp), horizontalArrangement = Arrangement.Center) { LoadingIndicator(); Text(stringResource(R.string.ui_text_static_065), Modifier.padding(start = 12.dp)) }
                 error != null -> Text(error, color = MaterialTheme.colorScheme.error)
                 list.isEmpty() -> EmptyState(Sym.Android, "No installers found.")
                 else -> LazyColumn(Modifier.heightIn(max = 520.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -1300,7 +1326,7 @@ private fun InstallerRow(vm: MainViewModel, ins: Installer, selected: Boolean, h
             supportingContent = { Text(ins.packageName, maxLines = 1, overflow = TextOverflow.Ellipsis) },
             leadingContent = { icon?.let { Image(it, null, Modifier.size(40.dp).clip(RoundedCornerShape(12.dp))) } ?: TonalIcon(Sym.Android, MaterialTheme.colorScheme.primary) },
             trailingContent = { Row(verticalAlignment = Alignment.CenterVertically) {
-                if (ins.isSystem) Text("System", Modifier.clip(Pill).background(MaterialTheme.colorScheme.surfaceContainerHighest).padding(horizontal = 8.dp, vertical = 2.dp), style = MaterialTheme.typography.labelSmall)
+                if (ins.isSystem) Text(stringResource(R.string.ui_text_static_066), Modifier.clip(Pill).background(MaterialTheme.colorScheme.surfaceContainerHighest).padding(horizontal = 8.dp, vertical = 2.dp), style = MaterialTheme.typography.labelSmall)
                 if (selected) Icon(Sym.CheckCircle, null, Modifier.padding(start = 8.dp), tint = MaterialTheme.colorScheme.primary)
             } },
             colors = ListItemDefaults.colors(containerColor = if (selected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerHigh))
@@ -1322,19 +1348,19 @@ private fun ScannerSheet(apps: List<AppItem>, onDismiss: () -> Unit) = OrionShee
     Column(Modifier.padding(horizontal = 24.dp, vertical = 8.dp)) {
         when {
             scanning -> {
-                Text("Scanning Catalog...", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.settings_scanning_catalog), style = MaterialTheme.typography.titleMedium)
                 LinearWavyProgressIndicator({ if (total == 0) 0f else progress / total.toFloat() }, Modifier.fillMaxWidth().padding(vertical = 12.dp))
                 Text("$progress / $total apps checked", style = MaterialTheme.typography.bodySmall)
             }
             done -> {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) {
-                        Text("Scan Complete", style = MaterialTheme.typography.titleMedium)
+                        Text(stringResource(R.string.settings_scan_complete), style = MaterialTheme.typography.titleMedium)
                         Text("Found ${results.size} apps with issues out of $total.", style = MaterialTheme.typography.bodySmall)
                     }
-                    FilledTonalButton(::start, shapes = ButtonDefaults.shapes()) { Text("Scan Again") }
+                    FilledTonalButton(::start, shapes = ButtonDefaults.shapes()) { Text(stringResource(R.string.settings_scan_again)) }
                 }
-                if (results.isEmpty()) Text("Everything looks perfect!", Modifier.padding(vertical = 24.dp), color = Safe, fontWeight = FontWeight.Bold)
+                if (results.isEmpty()) Text(stringResource(R.string.settings_everything_looks_perfect), Modifier.padding(vertical = 24.dp), color = Safe, fontWeight = FontWeight.Bold)
                 else LazyColumn(Modifier.heightIn(max = 480.dp).padding(top = 12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     items(results, key = { it.appId }) { r ->
                         Card(shape = RoundedCornerShape(20.dp), colors = CardDefaults.cardColors(MaterialTheme.colorScheme.errorContainer.copy(.4f))) {
@@ -1347,10 +1373,10 @@ private fun ScannerSheet(apps: List<AppItem>, onDismiss: () -> Unit) = OrionShee
                 }
             }
             else -> {
-                Text("Ready to Scan", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.settings_ready_to_scan), style = MaterialTheme.typography.titleMedium)
                 Text("This will run a diagnostic on all ${apps.size} apps in your catalog, checking for missing text and sending HTTP HEAD requests to verify URLs.",
                     Modifier.padding(vertical = 8.dp), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                Button(::start, modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp), shapes = ButtonDefaults.shapes()) { Text("Run Diagnostic Now") }
+                Button(::start, modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp), shapes = ButtonDefaults.shapes()) { Text(stringResource(R.string.settings_run_diagnostic_now)) }
             }
         }
     }

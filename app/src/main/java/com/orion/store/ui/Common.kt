@@ -287,7 +287,7 @@ fun statusText(app: AppItem): Pair<String, Color>? {
 fun SectionTitle(title: String, modifier: Modifier = Modifier, subtitle: String? = null, onMore: (() -> Unit)? = null, action: (@Composable () -> Unit)? = null) =
     Row(modifier.fillMaxWidth().padding(start = 20.dp, end = 12.dp, top = 8.dp, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically) {
         Column(Modifier.weight(1f)) {
-            Text(title, style = MaterialTheme.typography.titleLargeEmphasized, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(uiText(title), style = MaterialTheme.typography.titleLargeEmphasized, maxLines = 1, overflow = TextOverflow.Ellipsis)
             subtitle?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2, overflow = TextOverflow.Ellipsis) }
         }
         action?.invoke()
@@ -301,7 +301,7 @@ fun EmptyState(icon: ImageVector, title: String, body: String? = null, modifier:
             Icon(icon, null, Modifier.size(40.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         Spacer(Modifier.height(16.dp))
-        Text(title, style = MaterialTheme.typography.titleMediumEmphasized)
+        Text(uiText(title), style = MaterialTheme.typography.titleMediumEmphasized)
         body?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 6.dp)) }
     }
 
@@ -317,7 +317,7 @@ fun SheetTitle(title: String, icon: ImageVector? = null, subtitle: String? = nul
             Spacer(Modifier.width(14.dp))
         }
         Column {
-            Text(title, style = MaterialTheme.typography.headlineSmallEmphasized)
+            Text(uiText(title), style = MaterialTheme.typography.headlineSmallEmphasized)
             subtitle?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
         }
     }
@@ -364,7 +364,7 @@ fun CtaButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier, 
         if (loading) LoadingIndicator(Modifier.size(ButtonDefaults.iconSizeFor(h) + 8.dp), color = LocalContentColor.current)
         else icon?.let { Icon(it, null, Modifier.size(ButtonDefaults.iconSizeFor(h))) }
         if (loading || icon != null) Spacer(Modifier.width(ButtonDefaults.iconSpacingFor(h)))
-        Text(text, style = ButtonDefaults.textStyleFor(h), maxLines = 1, overflow = TextOverflow.Ellipsis)
+        Text(uiText(text), style = ButtonDefaults.textStyleFor(h), maxLines = 1, overflow = TextOverflow.Ellipsis)
     }
     val m = modifier.fillMaxWidth().heightIn(min = h)
     if (tonal) FilledTonalButton(onClick, modifier = m, enabled = enabled && !loading, shapes = ButtonDefaults.shapesFor(h), contentPadding = ButtonDefaults.contentPaddingFor(h), content = content)

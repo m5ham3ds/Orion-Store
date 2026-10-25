@@ -1,5 +1,8 @@
 package com.orion.store.ui
 
+import androidx.compose.ui.res.stringResource
+import com.orion.store.R
+
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloat
@@ -214,7 +217,7 @@ fun KnowOrionScreen(vm: MainViewModel, onClose: () -> Unit) {
                 Box(Modifier.size(56.dp).background(cs.primaryContainer, MaterialShapes.Cookie9Sided.toShape()), contentAlignment = Alignment.Center) {
                     Icon(painterResource(com.orion.store.R.drawable.ic_splash_logo), null, Modifier.size(40.dp), tint = cs.onPrimaryContainer)
                 }
-                Text("That's all of Orion", Modifier.padding(top = 14.dp), style = MaterialTheme.typography.titleLargeEmphasized)
+                Text(stringResource(R.string.ui_text_static_037), Modifier.padding(top = 14.dp), style = MaterialTheme.typography.titleLargeEmphasized)
                 Text("$total features in ${CHAPTERS.size} chapters, and more on the way.", Modifier.padding(top = 4.dp), style = MaterialTheme.typography.bodyMedium,
                     color = cs.onSurfaceVariant, textAlign = TextAlign.Center)
                 Surface(Modifier.padding(top = 14.dp), shape = Pill, color = cs.surfaceContainerHigh) {
@@ -256,8 +259,8 @@ private fun GuideHero(total: Int) {
             MorphBlob(HERO_SHAPES, shape, 104.dp, cs.primary, Modifier.padding(top = 12.dp)) {
                 Icon(painterResource(com.orion.store.R.drawable.ic_splash_logo), null, Modifier.size(72.dp), tint = cs.onPrimary)
             }
-            Text("FIELD GUIDE", Modifier.padding(top = 20.dp), style = MaterialTheme.typography.labelLargeEmphasized, color = cs.primary)
-            Text("Know Orion", style = MaterialTheme.typography.displayMediumEmphasized)
+            Text(stringResource(R.string.guide_field_guide), Modifier.padding(top = 20.dp), style = MaterialTheme.typography.labelLargeEmphasized, color = cs.primary)
+            Text(stringResource(R.string.guide_know_orion), style = MaterialTheme.typography.displayMediumEmphasized)
             Text("Every one of Orion's $total features, from backups and compact mode to badges, the Hall of Fame and the Dino run. Tap a feature with an arrow to go straight to it.",
                 Modifier.padding(top = 8.dp), style = MaterialTheme.typography.bodyLarge, color = cs.onSurfaceVariant)
         }
@@ -272,7 +275,7 @@ private fun GuideSearch(query: String, onChange: (String) -> Unit) {
         Icon(Sym.Search, null, tint = cs.onSurfaceVariant)
         BasicTextField(query, onChange, Modifier.weight(1f).padding(horizontal = 12.dp), singleLine = true,
             textStyle = MaterialTheme.typography.bodyLarge.copy(color = cs.onSurface), cursorBrush = SolidColor(cs.primary),
-            decorationBox = { field -> Box { if (query.isEmpty()) Text("Search features", style = MaterialTheme.typography.bodyLarge, color = cs.onSurfaceVariant); field() } })
+            decorationBox = { field -> Box { if (query.isEmpty()) Text(stringResource(R.string.guide_search_features), style = MaterialTheme.typography.bodyLarge, color = cs.onSurfaceVariant); field() } })
         if (query.isNotEmpty()) IconButton({ onChange("") }) { Icon(Sym.Close, "Clear search") }
     }
 }
@@ -289,7 +292,7 @@ private fun ChapterHeader(c: Chapter, index: Int) {
         Spacer(Modifier.width(16.dp))
         Column(Modifier.weight(1f)) {
             Text("CHAPTER ${index + 1}", style = MaterialTheme.typography.labelMedium, color = fg.copy(.75f))
-            Text(c.title, style = MaterialTheme.typography.headlineSmallEmphasized, color = fg)
+            Text(uiText(c.title), style = MaterialTheme.typography.headlineSmallEmphasized, color = fg)
             Text(c.blurb, style = MaterialTheme.typography.bodyMedium, color = fg.copy(.85f))
         }
         Spacer(Modifier.width(8.dp))

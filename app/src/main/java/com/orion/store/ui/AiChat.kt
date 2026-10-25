@@ -1,5 +1,8 @@
 package com.orion.store.ui
 
+import androidx.compose.ui.res.stringResource
+import com.orion.store.R
+
 import android.media.AudioAttributes
 import android.media.AudioFormat
 import android.media.AudioTrack
@@ -199,7 +202,7 @@ fun AiScreen(vm: MainViewModel, onClose: () -> Unit) {
         Row(Modifier.fillMaxWidth().padding(start = 20.dp, end = 8.dp, top = 8.dp, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically) {
             AiOrb(40.dp, ai.busy); Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
-                Text("Orion AI", style = MaterialTheme.typography.titleLargeEmphasized)
+                Text(stringResource(R.string.ui_text_static_011), style = MaterialTheme.typography.titleLargeEmphasized)
                 Text(if (ready) label else "Not connected", style = MaterialTheme.typography.labelMedium, color = cs.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
             AnimatedVisibility(ai.messages.isNotEmpty(), enter = scaleIn() + fadeIn(), exit = scaleOut() + fadeOut()) {
@@ -250,7 +253,7 @@ private fun AiIntro(title: String, body: String, extra: @Composable ColumnScope.
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(vertical = 24.dp), horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center) {
         AiOrb(88.dp, false)
-        Text(title, Modifier.padding(horizontal = 28.dp).padding(top = 24.dp), style = MaterialTheme.typography.headlineMediumEmphasized, textAlign = TextAlign.Center)
+        Text(uiText(title), Modifier.padding(horizontal = 28.dp).padding(top = 24.dp), style = MaterialTheme.typography.headlineMediumEmphasized, textAlign = TextAlign.Center)
         Text(body, Modifier.padding(horizontal = 28.dp).padding(top = 8.dp), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
         extra()
     }
@@ -269,7 +272,7 @@ private fun Entrance(m: AiMsg, content: @Composable () -> Unit) {
 @Composable
 private fun UserBubble(text: String) = Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
     val cs = MaterialTheme.colorScheme
-    Text(text, Modifier.padding(start = 48.dp).clip(RoundedCornerShape(24.dp, 24.dp, 6.dp, 24.dp)).background(cs.primaryContainer).padding(horizontal = 16.dp, vertical = 12.dp),
+    Text(uiText(text), Modifier.padding(start = 48.dp).clip(RoundedCornerShape(24.dp, 24.dp, 6.dp, 24.dp)).background(cs.primaryContainer).padding(horizontal = 16.dp, vertical = 12.dp),
         style = MaterialTheme.typography.bodyLarge, color = cs.onPrimaryContainer)
 }
 
@@ -286,7 +289,7 @@ private fun AiBubble(vm: MainViewModel, m: AiMsg) = Row(Modifier.fillMaxWidth())
             if (m.text.isEmpty()) Waiting()
             else Text(m.text, style = MaterialTheme.typography.bodyLarge, color = if (m.error) cs.onErrorContainer else cs.onSurface)
         }
-        if (m.stopped) Text("Stopped", Modifier.padding(start = 12.dp, top = 4.dp), style = MaterialTheme.typography.labelMedium, color = cs.onSurfaceVariant)
+        if (m.stopped) Text(stringResource(R.string.ui_text_static_012), Modifier.padding(start = 12.dp, top = 4.dp), style = MaterialTheme.typography.labelMedium, color = cs.onSurfaceVariant)
         // Features Orion AI pointed at, one tap away: the chat closes and the screen or setting opens
         AnimatedVisibility(m.features.isNotEmpty()) {
             FlowRow(Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -341,14 +344,14 @@ private fun AiAction(vm: MainViewModel, app: AppItem) {
         CardState.DOWNLOADING -> CircularWavyProgressIndicator(Modifier.size(36.dp))
         CardState.INSTALLED -> FilledTonalButton({
             runCatching { vm.tracker.launch(s.resolvedPackageNames[app.id] ?: app.packageName.orEmpty()) }.onFailure { vm.selectApp(app, "ai") }
-        }, shapes = ButtonDefaults.shapes(), contentPadding = pad) { Text("Open") }
-        CardState.READY -> Button({ vm.download(app) }, shapes = ButtonDefaults.shapes(), contentPadding = pad) { Text("Install") }
-        CardState.UPDATE -> Button({ vm.download(app) }, shapes = ButtonDefaults.shapes(), contentPadding = pad) { Text("Update") }
+        }, shapes = ButtonDefaults.shapes(), contentPadding = pad) { Text(stringResource(R.string.ui_text_static_013)) }
+        CardState.READY -> Button({ vm.download(app) }, shapes = ButtonDefaults.shapes(), contentPadding = pad) { Text(stringResource(R.string.ui_text_static_014)) }
+        CardState.UPDATE -> Button({ vm.download(app) }, shapes = ButtonDefaults.shapes(), contentPadding = pad) { Text(stringResource(R.string.ui_text_static_015)) }
         else -> {
             val url = app.variants.firstOrNull()?.url ?: app.downloadUrl
             val direct = app.installsHere() && app.variants.size <= 1 && url.isNotEmpty() && url != "#" && app.id !in Defaults.MICROG_DEPENDENT_APPS
-            if (direct) Button({ vm.download(app) }, shapes = ButtonDefaults.shapes(), contentPadding = pad) { Icon(Sym.Download, null, Modifier.size(18.dp)); Spacer(Modifier.width(6.dp)); Text("Get") }
-            else FilledTonalButton({ vm.selectApp(app, "ai") }, shapes = ButtonDefaults.shapes(), contentPadding = pad) { Text("View") }
+            if (direct) Button({ vm.download(app) }, shapes = ButtonDefaults.shapes(), contentPadding = pad) { Icon(Sym.Download, null, Modifier.size(18.dp)); Spacer(Modifier.width(6.dp)); Text(stringResource(R.string.ui_text_static_016)) }
+            else FilledTonalButton({ vm.selectApp(app, "ai") }, shapes = ButtonDefaults.shapes(), contentPadding = pad) { Text(stringResource(R.string.ui_text_static_017)) }
         }
     }
 }
@@ -361,7 +364,7 @@ private fun AiInput(text: String, onText: (String) -> Unit, busy: Boolean, onSto
         BasicTextField(text, onText, Modifier.weight(1f).heightIn(min = 56.dp).clip(RoundedCornerShape(28.dp)).background(cs.surfaceContainerHigh).padding(horizontal = 20.dp, vertical = 16.dp),
             textStyle = MaterialTheme.typography.bodyLarge.copy(color = cs.onSurface), cursorBrush = SolidColor(cs.primary), maxLines = 5,
             keyboardOptions = KeyboardOptions(KeyboardCapitalization.Sentences, imeAction = ImeAction.Send), keyboardActions = KeyboardActions(onSend = { if (!busy && text.isNotBlank()) onSend() }),
-            decorationBox = { f -> Box { if (text.isEmpty()) Text("Describe the app you need", style = MaterialTheme.typography.bodyLarge, color = cs.onSurfaceVariant); f() } })
+            decorationBox = { f -> Box { if (text.isEmpty()) Text(stringResource(R.string.ui_text_static_018), style = MaterialTheme.typography.bodyLarge, color = cs.onSurfaceVariant); f() } })
         Spacer(Modifier.width(8.dp))
         FilledIconButton({ if (busy) { vm.haptic(H.LIGHT); onStop() } else onSend() }, modifier = Modifier.size(56.dp), enabled = busy || text.isNotBlank(), shapes = IconButtonDefaults.shapes(),
             colors = if (busy) IconButtonDefaults.filledIconButtonColors(containerColor = cs.tertiaryContainer, contentColor = cs.onTertiaryContainer) else IconButtonDefaults.filledIconButtonColors()) {
@@ -391,13 +394,13 @@ fun AiSettingsSheet(vm: MainViewModel, onDismiss: () -> Unit) = OrionSheet(onDis
             ProviderPicker(p) { prov = it.id }
             if (p == AiProvider.LOCAL) LocalModels(local) { local = it }
             else {
-                if (p == AiProvider.CUSTOM) OutlinedTextField(base, { base = it.trim() }, Modifier.fillMaxWidth(), label = { Text("Server address") },
-                    placeholder = { Text("https://example.com/v1") }, supportingText = { Text("Any server that speaks the OpenAI chat format") }, singleLine = true, shape = RoundedCornerShape(20.dp))
-                OutlinedTextField(key, { key = it.trim() }, Modifier.fillMaxWidth(), label = { Text("API key") }, placeholder = { Text(p.keyHint) }, singleLine = true,
+                if (p == AiProvider.CUSTOM) OutlinedTextField(base, { base = it.trim() }, Modifier.fillMaxWidth(), label = { Text(stringResource(R.string.ui_text_static_019)) },
+                    placeholder = { Text(stringResource(R.string.ui_text_static_020)) }, supportingText = { Text(stringResource(R.string.ui_text_static_021)) }, singleLine = true, shape = RoundedCornerShape(20.dp))
+                OutlinedTextField(key, { key = it.trim() }, Modifier.fillMaxWidth(), label = { Text(stringResource(R.string.ui_text_static_022)) }, placeholder = { Text(p.keyHint) }, singleLine = true,
                     shape = RoundedCornerShape(20.dp), visualTransformation = if (reveal) VisualTransformation.None else PasswordVisualTransformation(),
                     trailingIcon = { IconButton({ reveal = !reveal }) { Icon(if (reveal) Sym.VisibilityOff else Sym.Visibility, if (reveal) "Hide key" else "Show key") } })
                 if (p.keyUrl.isNotEmpty()) TextButton({ vm.tracker.open(p.keyUrl) }) { Icon(Sym.OpenInNew, null, Modifier.size(18.dp)); Spacer(Modifier.width(8.dp)); Text("Get a ${p.label} key") }
-                OutlinedTextField(model, { model = it.trim() }, Modifier.fillMaxWidth(), label = { Text("Model") }, placeholder = { Text(p.model.ifEmpty { "Model name" }) }, singleLine = true,
+                OutlinedTextField(model, { model = it.trim() }, Modifier.fillMaxWidth(), label = { Text(stringResource(R.string.ui_text_static_023)) }, placeholder = { Text(p.model.ifEmpty { "Model name" }) }, singleLine = true,
                     shape = RoundedCornerShape(20.dp), supportingText = { Text(if (p.model.isNotEmpty()) "Leave empty for ${p.model}" else "The model name your server uses") },
                     trailingIcon = {
                         IconButton({
@@ -418,8 +421,8 @@ fun AiSettingsSheet(vm: MainViewModel, onDismiss: () -> Unit) = OrionSheet(onDis
             Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).background(cs.surfaceContainer).padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                 TonalIcon(if (sounds) Sym.Notifications else Sym.NotificationsOff, cs.primary); Spacer(Modifier.width(16.dp))
                 Column(Modifier.weight(1f)) {
-                    Text("Sound effects", style = MaterialTheme.typography.titleMedium)
-                    Text("Little chimes when you send and get replies", style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant)
+                    Text(stringResource(R.string.ui_text_static_024), style = MaterialTheme.typography.titleMedium)
+                    Text(stringResource(R.string.ui_text_static_025), style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant)
                 }
                 Switch(sounds, { sounds = it; vm.haptic(H.SELECTION); if (it) AiSound.receive() })
             }
@@ -456,7 +459,7 @@ private fun ProviderPicker(p: AiProvider, onPick: (AiProvider) -> Unit) {
     }
     if (!local) ExposedDropdownMenuBox(open, { open = it }) {
         OutlinedTextField(p.label, {}, Modifier.fillMaxWidth().menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable), readOnly = true, singleLine = true,
-            label = { Text("Provider") }, supportingText = { Text(PROVIDER_NOTES[p].orEmpty()) }, shape = RoundedCornerShape(20.dp),
+            label = { Text(stringResource(R.string.ui_text_static_026)) }, supportingText = { Text(PROVIDER_NOTES[p].orEmpty()) }, shape = RoundedCornerShape(20.dp),
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(open) })
         ExposedDropdownMenu(open, { open = false }, shape = RoundedCornerShape(20.dp), containerColor = cs.surfaceContainerHigh) {
             CLOUD.forEach { e ->

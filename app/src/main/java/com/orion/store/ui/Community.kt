@@ -1,5 +1,8 @@
 package com.orion.store.ui
 
+import androidx.compose.ui.res.stringResource
+import com.orion.store.R
+
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -115,7 +118,7 @@ private fun Section(step: Int, title: String, subtitle: String? = null, done: Bo
                 if (done) Icon(Sym.Check, "Done", Modifier.size(18.dp), tint = cs.onPrimary) else Text("$step", style = ty.titleSmallEmphasized, color = cs.onPrimaryContainer)
             }
             Spacer(Modifier.width(12.dp))
-            Column { Text(title, style = ty.titleMediumEmphasized); subtitle?.let { Text(it, style = ty.bodySmall, color = cs.onSurfaceVariant) } }
+            Column { Text(uiText(title), style = ty.titleMediumEmphasized); subtitle?.let { Text(it, style = ty.bodySmall, color = cs.onSurfaceVariant) } }
         }
         content()
     }
@@ -128,7 +131,7 @@ private fun fieldColors() = TextFieldDefaults.colors(focusedContainerColor = cs.
 private fun Field(value: String, onChange: (String) -> Unit, label: String, placeholder: String, modifier: Modifier = Modifier, lines: Int = 1, mono: Boolean = false,
                   enabled: Boolean = true, readOnly: Boolean = false, uri: Boolean = false, supporting: String? = null, trailing: (@Composable () -> Unit)? = null, onDone: (() -> Unit)? = null,
                   leading: (@Composable () -> Unit)? = null) =
-    TextField(value, onChange, modifier.fillMaxWidth(), label = { Text(label) }, placeholder = { Text(placeholder) }, singleLine = lines == 1, minLines = lines,
+    TextField(value, onChange, modifier.fillMaxWidth(), label = { Text(uiText(label)) }, placeholder = { Text(placeholder) }, singleLine = lines == 1, minLines = lines,
         enabled = enabled, readOnly = readOnly, shape = RoundedCornerShape(16.dp), colors = fieldColors(), leadingIcon = leading, trailingIcon = trailing, supportingText = supporting?.let { { Text(it) } },
         textStyle = if (mono) ty.bodySmall.copy(fontFamily = FontFamily.Monospace) else LocalTextStyle.current,
         keyboardOptions = KeyboardOptions(keyboardType = if (uri) KeyboardType.Uri else KeyboardType.Text, imeAction = if (onDone != null) ImeAction.Done else ImeAction.Default),
@@ -235,7 +238,7 @@ private fun NextBoss(ads: Int) {
                 Icon(BADGES[next.badge]?.first ?: Sym.Lock, null, Modifier.size(24.dp), tint = fg)
             }
             Column(Modifier.weight(1f).padding(start = 14.dp)) {
-                Text("Next boss", style = ty.labelMedium, color = fg.copy(.8f))
+                Text(stringResource(R.string.community_next_boss), style = ty.labelMedium, color = fg.copy(.8f))
                 Text(next.name, style = ty.titleMediumEmphasized, color = fg, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
             Text("${next.lvl - ads} to go", style = ty.labelLargeEmphasized, color = fg)
@@ -327,7 +330,7 @@ fun AdDonationSheet(vm: MainViewModel, onDismiss: () -> Unit) {
             Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp).padding(top = 8.dp, bottom = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 when (v) {
-                    "checking" -> { LoadingIndicator(Modifier.size(96.dp)); Text("Verifying Integrity...", style = ty.titleMediumEmphasized) }
+                    "checking" -> { LoadingIndicator(Modifier.size(96.dp)); Text(stringResource(R.string.community_verifying_integrity), style = ty.titleMediumEmphasized) }
                     "violation" -> {
                         Lead("Signal Jammed", "To protect the economy from farming, VPNs and Ad Blockers are not allowed for this quest. Please disable them and try again.", reason, cs.error, center = true) {
                             Blob(Sym.GppBad, cs.error, 88, MaterialShapes.Cookie7Sided)
@@ -339,7 +342,7 @@ fun AdDonationSheet(vm: MainViewModel, onDismiss: () -> Unit) {
                             Blob(Sym.VolunteerActivism, cs.primary, 88, MaterialShapes.Sunny)
                         }
                         CtaButton("I'm a Hero", { view = "urgent"; vm.haptic(H.MEDIUM) }, icon = Sym.Bolt)
-                        TextButton(close, Modifier.fillMaxWidth()) { Text("Cancel") }
+                        TextButton(close, Modifier.fillMaxWidth()) { Text(stringResource(R.string.ui_text_static_005)) }
                     } else if (streak == CHAPTER_ONE_END) {
                         var k by remember { mutableIntStateOf(0) }
                         LaunchedEffect(Unit) { delay(150); k = 1 }
@@ -350,7 +353,7 @@ fun AdDonationSheet(vm: MainViewModel, onDismiss: () -> Unit) {
                             "Chapter 2 · New mission", Fuchsia, center = true)
                         NextBoss(streak)
                         CtaButton("Begin Chapter 2", ::play, icon = Sym.Swords)
-                        TextButton(close, Modifier.fillMaxWidth()) { Text("Not yet") }
+                        TextButton(close, Modifier.fillMaxWidth()) { Text(stringResource(R.string.community_not_yet)) }
                     } else {
                         Lead("Resting at Camp", "You've restored your health by the fire. The journey ahead is dangerous, but the rewards are legendary. Ready to proceed?",
                             "Chapter ${questChapter(streak)} · Level $streak", Orange, center = true) {
@@ -359,29 +362,29 @@ fun AdDonationSheet(vm: MainViewModel, onDismiss: () -> Unit) {
                         NextBoss(streak)
                         prev?.let { p ->
                             Surface(shape = RoundedCornerShape(20.dp), color = cs.surfaceContainerHigh) {
-                                ListItem({ Text(p.title, fontWeight = FontWeight.SemiBold) }, overlineContent = { Text("Previously") }, leadingContent = { Blob(p.icon, p.color, 40) },
+                                ListItem({ Text(p.title, fontWeight = FontWeight.SemiBold) }, overlineContent = { Text(stringResource(R.string.community_previously)) }, leadingContent = { Blob(p.icon, p.color, 40) },
                                     colors = ListItemDefaults.colors(containerColor = Color.Transparent))
                             }
                         }
                         CtaButton("Continue Journey", ::play, icon = Sym.PlayArrow)
-                        TextButton(close, Modifier.fillMaxWidth()) { Text("Stay at Camp (Close)") }
+                        TextButton(close, Modifier.fillMaxWidth()) { Text(stringResource(R.string.community_stay_at_camp_close)) }
                     }
                     "urgent" -> {
                         RemoteIcon(Defaults.DEV_PROFILE.image.orEmpty(), "R", 96.dp, shape = MaterialShapes.Cookie9Sided.toShape())
-                        Text("ORION IS IN DANGER!", style = ty.headlineSmallEmphasized, color = cs.error, textAlign = TextAlign.Center)
+                        Text(stringResource(R.string.community_orion_is_in_danger), style = ty.headlineSmallEmphasized, color = cs.error, textAlign = TextAlign.Center)
                         Text(buildAnnotatedString {
                             append("“Listen to me! The Entropy Legion has breached the firewall. They're corrupting the source code! I can't hold them back alone. I need you to channel the energy ")
                             withStyle(SpanStyle(color = cs.error, fontWeight = FontWeight.Black)) { append("RIGHT NOW!") }; append("”")
                         }, style = ty.bodyLarge, fontStyle = FontStyle.Italic, textAlign = TextAlign.Center)
-                        Text("RookieZ, Lead Dev", style = ty.labelLarge, color = cs.onSurfaceVariant)
+                        Text(stringResource(R.string.community_rookiez_lead_dev), style = ty.labelLarge, color = cs.onSurfaceVariant)
                         CtaButton("ACCEPT THE QUEST", ::play, icon = Sym.Bolt)
-                        TextButton(close, Modifier.fillMaxWidth()) { Text("I need time...") }
+                        TextButton(close, Modifier.fillMaxWidth()) { Text(stringResource(R.string.community_i_need_time)) }
                     }
                     "loading" -> {
                         LoadingIndicator(Modifier.size(112.dp))
-                        Text("Engaging Enemy", style = ty.headlineSmallEmphasized)
+                        Text(stringResource(R.string.community_engaging_enemy), style = ty.headlineSmallEmphasized)
                         AnimatedContent(msg, label = "lm") { Text(LOADING_MESSAGES[it], style = ty.bodyLarge, color = cs.onSurfaceVariant) }
-                        Text("(Connecting to Unity Network...)", style = ty.bodySmall, color = cs.onSurfaceVariant)
+                        Text(stringResource(R.string.community_connecting_to_unity_network), style = ty.bodySmall, color = cs.onSurfaceVariant)
                     }
                     "noad" -> {
                         Lead("Mission Aborted", reason, "No XP this time", Caution, center = true) { Blob(Sym.Movie, Caution, 88, MaterialShapes.Cookie6Sided) }
@@ -395,7 +398,7 @@ fun AdDonationSheet(vm: MainViewModel, onDismiss: () -> Unit) {
                                 Icon(card.icon, null, Modifier.size(56.dp), tint = card.color)
                             }
                             if (boss) Surface(Modifier.offset(y = 10.dp), shape = Pill, color = cs.tertiary, contentColor = cs.onTertiary) {
-                                Text("VICTORY", Modifier.padding(horizontal = 14.dp, vertical = 4.dp), style = ty.labelLargeEmphasized)
+                                Text(stringResource(R.string.ui_text_static_027), Modifier.padding(horizontal = 14.dp, vertical = 4.dp), style = ty.labelLargeEmphasized)
                             }
                         }
                         Spacer(Modifier.height(4.dp))
@@ -403,7 +406,7 @@ fun AdDonationSheet(vm: MainViewModel, onDismiss: () -> Unit) {
                         Text(card.msg, style = ty.bodyLarge, color = cs.onSurfaceVariant, textAlign = TextAlign.Center)
                         NextBoss(streak)
                         CtaButton("Continue Quest", ::play, icon = Sym.PlayArrow)
-                        TextButton(close, Modifier.fillMaxWidth()) { Text("Rest at Camp (Close)") }
+                        TextButton(close, Modifier.fillMaxWidth()) { Text(stringResource(R.string.community_rest_at_camp_close)) }
                     }
                 }
             }
@@ -562,10 +565,10 @@ private fun SignatureSide(s: Settings, modifier: Modifier, update: ((Settings) -
     fun undo() { future += s.pilotSignature to s.signatureInk; apply(past.removeAt(past.lastIndex)) }
     fun redo() { past += s.pilotSignature to s.signatureInk; apply(future.removeAt(future.lastIndex)) }
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Text("PILOT SIGNATURE", Modifier.weight(1f), style = ty.labelLarge, letterSpacing = 2.sp, fontWeight = FontWeight.Black)
+        Text(stringResource(R.string.community_pilot_signature), Modifier.weight(1f), style = ty.labelLarge, letterSpacing = 2.sp, fontWeight = FontWeight.Black)
         IconButton(::undo, Modifier.size(32.dp), enabled = past.isNotEmpty()) { Icon(Sym.Undo, "Undo", Modifier.size(20.dp)) }
         IconButton(::redo, Modifier.size(32.dp), enabled = future.isNotEmpty()) { Icon(Sym.Redo, "Redo", Modifier.size(20.dp)) }
-        if (s.pilotSignature.isNotEmpty()) Text("Clear", Modifier.clip(Pill).clickable { step("" to s.signatureInk) }.padding(horizontal = 10.dp, vertical = 4.dp),
+        if (s.pilotSignature.isNotEmpty()) Text(stringResource(R.string.ui_text_static_028), Modifier.clip(Pill).clickable { step("" to s.signatureInk) }.padding(horizontal = 10.dp, vertical = 4.dp),
             style = ty.labelLargeEmphasized)
     }
     SignaturePad(s.pilotSignature, ink, Modifier.padding(vertical = 10.dp).weight(1f).fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(Color(0xFFFAFAF7))) { sig ->
@@ -578,7 +581,7 @@ private fun SignatureSide(s: Settings, modifier: Modifier, update: ((Settings) -
                 .clip(CircleShape).background(c).clickable { if (!on) step(s.pilotSignature to i) }.semantics { contentDescription = "Ink ${i + 1}"; selected = on })
         }
         Spacer(Modifier.weight(1f))
-        Text("Tap to flip", style = ty.labelSmall, color = LocalContentColor.current.copy(.7f))
+        Text(stringResource(R.string.community_tap_to_flip), style = ty.labelSmall, color = LocalContentColor.current.copy(.7f))
     }
 }
 
@@ -618,7 +621,7 @@ private fun CountStat(icon: androidx.compose.ui.graphics.vector.ImageVector, c: 
         // Narrow screens and large font scales shrink the text to fit instead of cutting "Downloaded" short
         Column(Modifier.weight(1f)) {
             Text("$prefix$n$suffix", style = ty.titleLargeEmphasized, color = fg, maxLines = 1, autoSize = TextAutoSize.StepBased(12.sp, ty.titleLargeEmphasized.fontSize))
-            Text(label, style = ty.labelMedium, color = fg.copy(.8f), maxLines = 1, autoSize = TextAutoSize.StepBased(8.sp, ty.labelMedium.fontSize))
+            Text(uiText(label), style = ty.labelMedium, color = fg.copy(.8f), maxLines = 1, autoSize = TextAutoSize.StepBased(8.sp, ty.labelMedium.fontSize))
         }
     }
 }
@@ -635,7 +638,7 @@ private fun ProfileView(vm: MainViewModel, s: Settings, d: DataState, openBadges
     }
     Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp).padding(top = 20.dp, bottom = 28.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         PilotCard(s, profile?.name ?: name, profile?.avatarUrl ?: temp.url) { picker = !picker; vm.haptic(H.LIGHT) }
-        Text("Tilt or drag the card · tap it to flip and sign · tap the avatar to change it", Modifier.fillMaxWidth(), style = ty.labelMedium, color = cs.onSurfaceVariant, textAlign = TextAlign.Center)
+        Text(stringResource(R.string.community_tilt_or_drag_the_card_tap), Modifier.fillMaxWidth(), style = ty.labelMedium, color = cs.onSurfaceVariant, textAlign = TextAlign.Center)
         AnimatedVisibility(picker, enter = expandVertically(MaterialTheme.motionScheme.defaultSpatialSpec()) + fadeIn(), exit = shrinkVertically(MaterialTheme.motionScheme.defaultSpatialSpec()) + fadeOut()) {
             LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp), contentPadding = PaddingValues(vertical = 4.dp)) {
                 items(AVATAR_CHOICES, key = { it.id }) { a ->
@@ -647,10 +650,10 @@ private fun ProfileView(vm: MainViewModel, s: Settings, d: DataState, openBadges
         }
         // Top, not center: the field's supporting text would otherwise push the button below the field's line
         if (profile == null) Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedTextField(name, { name = it.take(15) }, Modifier.weight(1f), placeholder = { Text("Set your alien alias...") }, singleLine = true, shape = RoundedCornerShape(28.dp),
+            OutlinedTextField(name, { name = it.take(15) }, Modifier.weight(1f), placeholder = { Text(stringResource(R.string.community_set_your_alien_alias)) }, singleLine = true, shape = RoundedCornerShape(28.dp),
                 supportingText = { Text("${name.trim().length}/15 · at least 3") })
             Button({ vm.set { it.withProfile(UserProfile(name.trim(), temp.id, temp.url, System.currentTimeMillis()), System.currentTimeMillis()) }; picker = false; vm.haptic(H.SUCCESS) },
-                modifier = Modifier.height(56.dp), enabled = name.trim().length >= 3, shapes = ButtonDefaults.shapes()) { Text("Secure Identity") }
+                modifier = Modifier.height(56.dp), enabled = name.trim().length >= 3, shapes = ButtonDefaults.shapes()) { Text(stringResource(R.string.community_secure_identity)) }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             CountStat(Sym.Favorite, Pink, d.favorites.size, "Favorites", Modifier.weight(1f))
@@ -664,7 +667,7 @@ private fun ProfileView(vm: MainViewModel, s: Settings, d: DataState, openBadges
             verticalArrangement = Arrangement.spacedBy(14.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
-                    Text("Badge collection", style = ty.titleLargeEmphasized)
+                    Text(stringResource(R.string.community_badge_collection), style = ty.titleLargeEmphasized)
                     Text("$unlocked of ${PROFILE_BADGES.size} unlocked", style = ty.bodySmall, color = cs.onSurfaceVariant)
                 }
                 FilledTonalIconButton({ openBadges() }, shapes = IconButtonDefaults.shapes()) { Icon(Sym.ArrowForward, "Open badge archive") }
@@ -704,7 +707,7 @@ private fun BadgeArchive(vm: MainViewModel, s: Settings, select: Boolean, index:
     Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(bottom = 28.dp)) {
         Row(Modifier.fillMaxWidth().padding(horizontal = 8.dp), verticalAlignment = Alignment.CenterVertically) {
             Spacer(Modifier.weight(1f))
-            if (select && s.showcasedBadges.isNotEmpty()) TextButton({ vm.set { it.copy(showcasedBadges = emptyList()) }; vm.haptic(H.MEDIUM) }) { Text("Reset") }
+            if (select && s.showcasedBadges.isNotEmpty()) TextButton({ vm.set { it.copy(showcasedBadges = emptyList()) }; vm.haptic(H.MEDIUM) }) { Text(stringResource(R.string.ui_text_static_029)) }
             Surface(Modifier.padding(end = 12.dp), shape = Pill, color = cs.primaryContainer, contentColor = cs.onPrimaryContainer) {
                 Text("$unlocked/${PROFILE_BADGES.size}", Modifier.padding(horizontal = 12.dp, vertical = 4.dp), style = ty.labelLargeEmphasized)
             }
@@ -719,7 +722,7 @@ private fun BadgeArchive(vm: MainViewModel, s: Settings, select: Boolean, index:
         var n = 0
         BADGE_GROUPS.forEach { (title, ids) ->
             Row(Modifier.padding(start = 24.dp, end = 24.dp, top = 28.dp, bottom = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-                Text(title, Modifier.weight(1f), style = ty.titleMediumEmphasized)
+                Text(uiText(title), Modifier.weight(1f), style = ty.titleMediumEmphasized)
                 Text("${ids.count { badgeUnlocked(it, s) }}/${ids.size}", style = ty.labelLarge, color = cs.onSurfaceVariant)
             }
             FlowRow(Modifier.fillMaxWidth().padding(horizontal = 16.dp), horizontalArrangement = Arrangement.SpaceEvenly, verticalArrangement = Arrangement.spacedBy(16.dp), maxItemsInEachRow = 4) {
@@ -825,7 +828,7 @@ fun CustomBundleSheet(vm: MainViewModel, onDismiss: () -> Unit) = OrionSheet(onD
                     Field(desc, { desc = it.take(180) }, "Description", "A short pitch for this bundle", lines = 3, supporting = "${desc.length}/180")
                 }
                 Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(28.dp)).background(cs.surfaceContainer).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text("Icon", style = ty.titleMediumEmphasized)
+                    Text(stringResource(R.string.ui_text_static_030), style = ty.titleMediumEmphasized)
                     FlowRow(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                         ICON_CHOICES.forEach { (id, label) ->
                             MorphPick(icon == id, { icon = id; vm.haptic(H.SELECTION) }, to = MaterialShapes.Cookie6Sided) {
@@ -833,7 +836,7 @@ fun CustomBundleSheet(vm: MainViewModel, onDismiss: () -> Unit) = OrionSheet(onD
                             }
                         }
                     }
-                    Text("Color", Modifier.padding(top = 4.dp), style = ty.titleMediumEmphasized)
+                    Text(stringResource(R.string.ui_text_static_031), Modifier.padding(top = 4.dp), style = ty.titleMediumEmphasized)
                     Row(Modifier.fillMaxWidth().bleed(16.dp).horizontalScroll(rememberScrollState()).padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                         COLOR_CHOICES.forEachIndexed { i, g ->
                             val sw = Regex("#[0-9a-fA-F]{6}").findAll(g).map { hex(it.value) }.toList().let { if (it.size == 1) it + it else it }
@@ -874,7 +877,7 @@ fun CustomBundleSheet(vm: MainViewModel, onDismiss: () -> Unit) = OrionSheet(onD
                 Lead("Submitted!", "Your bundle was saved locally and a GitHub issue was opened. We'll review it for the public catalog.", center = true) {
                     Blob(Sym.TaskAlt, Safe, 72, MaterialShapes.Cookie9Sided)
                 }
-                Text("Your saved bundles show up in the bundle row on the home page.", style = ty.bodySmall, color = cs.onSurfaceVariant, textAlign = TextAlign.Center)
+                Text(stringResource(R.string.community_your_saved_bundles_show_up_in), style = ty.bodySmall, color = cs.onSurfaceVariant, textAlign = TextAlign.Center)
             }
         }
     }
@@ -883,9 +886,9 @@ fun CustomBundleSheet(vm: MainViewModel, onDismiss: () -> Unit) = OrionSheet(onD
         saved?.let { Tag(it, Safe, Sym.CheckCircle) }
         when (step) {
             1 -> Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedButton(close, modifier = Modifier.weight(1f).height(56.dp), shapes = ButtonDefaults.shapes()) { Text("Cancel") }
+                OutlinedButton(close, modifier = Modifier.weight(1f).height(56.dp), shapes = ButtonDefaults.shapes()) { Text(stringResource(R.string.ui_text_static_005)) }
                 Button({ step = 2 }, modifier = Modifier.weight(1f).height(56.dp), enabled = can, shapes = ButtonDefaults.shapes()) {
-                    Text("Continue"); Spacer(Modifier.width(6.dp)); Icon(Sym.ArrowForward, null, Modifier.size(18.dp))
+                    Text(stringResource(R.string.ui_text_static_032)); Spacer(Modifier.width(6.dp)); Icon(Sym.ArrowForward, null, Modifier.size(18.dp))
                 }
             }
             2 -> Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -893,7 +896,7 @@ fun CustomBundleSheet(vm: MainViewModel, onDismiss: () -> Unit) = OrionSheet(onD
                 OutlinedButton({
                     err = ""; runCatching { save(false) }.onSuccess { saved = "Saved to your bundles"; vm.haptic(H.SUCCESS); scope.launch { delay(650); close() } }
                         .onFailure { err = it.message ?: "Could not save bundle." }
-                }, modifier = Modifier.weight(1f).height(56.dp), enabled = can, shapes = ButtonDefaults.shapes()) { Text("Keep Local") }
+                }, modifier = Modifier.weight(1f).height(56.dp), enabled = can, shapes = ButtonDefaults.shapes()) { Text(stringResource(R.string.community_keep_local)) }
                 Button({
                     err = ""
                     runCatching {
@@ -901,7 +904,7 @@ fun CustomBundleSheet(vm: MainViewModel, onDismiss: () -> Unit) = OrionSheet(onD
                         val body = bundleIssueBody(title.trim(), desc.trim(), icon, COLOR_CHOICES[color], picked, all, s.userProfile?.name)
                         vm.tracker.open("https://github.com/RookieEnough/Orion-Data/issues/new?title=${enc("[Bundle] ${title.trim()}")}&body=${enc(body)}&labels=bundle-submission")
                     }.onSuccess { step = 3; vm.haptic(H.SUCCESS) }.onFailure { err = it.message ?: "Could not submit bundle. Try again." }
-                }, modifier = Modifier.weight(1f).height(56.dp), enabled = can, shapes = ButtonDefaults.shapes()) { Text("Submit") }
+                }, modifier = Modifier.weight(1f).height(56.dp), enabled = can, shapes = ButtonDefaults.shapes()) { Text(stringResource(R.string.ui_text_static_033)) }
             }
             else -> CtaButton("Done", close, icon = Sym.Check)
         }
@@ -918,7 +921,7 @@ private fun BundleSteps(step: Int) = Row(Modifier.fillMaxWidth().padding(horizon
             if (n < step) Icon(Sym.Check, "Done", Modifier.size(16.dp), tint = cs.onPrimary)
             else Text("$n", style = ty.labelLargeEmphasized, color = if (on) cs.onPrimary else cs.onSurfaceVariant)
         }
-        Text(label, Modifier.padding(start = 6.dp), style = if (n == step) ty.labelLargeEmphasized else ty.labelLarge, color = if (on) cs.onSurface else cs.onSurfaceVariant)
+        Text(uiText(label), Modifier.padding(start = 6.dp), style = if (n == step) ty.labelLargeEmphasized else ty.labelLarge, color = if (on) cs.onSurface else cs.onSurfaceVariant)
         if (i < 2) {
             val track by animateColorAsState(if (n < step) cs.primary else cs.surfaceContainerHighest, MaterialTheme.motionScheme.defaultEffectsSpec(), label = "track")
             Box(Modifier.weight(1f).padding(horizontal = 8.dp).height(4.dp).clip(Pill).background(track))
@@ -1076,10 +1079,10 @@ fun SubmissionSheet(vm: MainViewModel, onDismiss: () -> Unit) = OrionSheet(onDis
         vm.set { it.registerSubmission(System.currentTimeMillis()) }; vm.haptic(H.SUCCESS)
     }
     issue?.let { url ->
-        AlertDialog({ issue = null }, icon = { Icon(Sym.Warning, null) }, title = { Text("Before You Continue") },
-            text = { Text("Orion already generated the correct JSON for your submission. Please do not manually edit the JSON block on the GitHub issue page, or the submission may break.") },
-            confirmButton = { TextButton({ vm.tracker.open(url); draft = null; issue = null; close() }) { Text("Open GitHub Issue") } },
-            dismissButton = { TextButton({ issue = null }) { Text("Go Back") } })
+        AlertDialog({ issue = null }, icon = { Icon(Sym.Warning, null) }, title = { Text(stringResource(R.string.community_before_you_continue)) },
+            text = { Text(stringResource(R.string.community_orion_already_generated_the_correct_json)) },
+            confirmButton = { TextButton({ vm.tracker.open(url); draft = null; issue = null; close() }) { Text(stringResource(R.string.community_open_github_issue)) } },
+            dismissButton = { TextButton({ issue = null }) { Text(stringResource(R.string.community_go_back)) } })
     }
     SheetToastHost(t)
     val sectionsDone = if (obtainium) listOf(f.json.isNotBlank(), f.oIcon.isNotBlank(), f.shots.size >= 3)
@@ -1152,7 +1155,7 @@ fun SubmissionSheet(vm: MainViewModel, onDismiss: () -> Unit) = OrionSheet(onDis
                 Field(f.name, { f = f.copy(name = it) }, "Name *", "App name")
                 var open by remember { mutableStateOf(false) }
                 ExposedDropdownMenuBox(open, { open = it }) {
-                    TextField(f.category, {}, Modifier.fillMaxWidth().menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable), readOnly = true, label = { Text("Category *") },
+                    TextField(f.category, {}, Modifier.fillMaxWidth().menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable), readOnly = true, label = { Text(stringResource(R.string.community_category)) },
                         shape = RoundedCornerShape(16.dp), colors = fieldColors(), trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(open) })
                     ExposedDropdownMenu(open, { open = false }, shape = RoundedCornerShape(20.dp)) {
                         CATEGORIES.forEach { c -> DropdownMenuItem({ Text(c) }, { f = f.copy(category = c); open = false; vm.haptic(H.SELECTION) }) }
@@ -1170,7 +1173,7 @@ fun SubmissionSheet(vm: MainViewModel, onDismiss: () -> Unit) = OrionSheet(onDis
                 Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(cs.surfaceContainerHighest).padding(start = 16.dp, end = 12.dp, top = 6.dp, bottom = 6.dp),
                     verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) {
-                        Text("Release keyword", style = ty.titleSmall)
+                        Text(stringResource(R.string.community_release_keyword), style = ty.titleSmall)
                         Text(if (f.manualKeyword) "Manual: matches your keyword" else "Auto: first APK in the release", style = ty.bodySmall, color = cs.onSurfaceVariant)
                     }
                     IconButton({ help = !help }) { Icon(Sym.Info, "Help: Release keyword") }
@@ -1181,14 +1184,14 @@ fun SubmissionSheet(vm: MainViewModel, onDismiss: () -> Unit) = OrionSheet(onDis
                 }
                 AnimatedVisibility(f.manualKeyword) { Field(f.keyword, { f = f.copy(keyword = it) }, "Keyword", "apk") }
                 releases?.let { r ->
-                    FilledTonalButton({ vm.tracker.open(r) }, shapes = ButtonDefaults.shapes()) { Icon(Sym.OpenInNew, null, Modifier.size(18.dp)); Spacer(Modifier.width(6.dp)); Text("Check releases page") }
+                    FilledTonalButton({ vm.tracker.open(r) }, shapes = ButtonDefaults.shapes()) { Icon(Sym.OpenInNew, null, Modifier.size(18.dp)); Spacer(Modifier.width(6.dp)); Text(stringResource(R.string.community_check_releases_page)) }
                 }
             }
             screenshots(if (android) 5 else 4)
         }
         Column(Modifier.padding(top = 8.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(6.dp)) {
             CtaButton("Generate GitHub issue", ::submit, icon = Sym.OpenInNew)
-            Text("Opens GitHub Issues in your browser with everything filled in.", style = ty.bodySmall, color = cs.onSurfaceVariant)
+            Text(stringResource(R.string.community_opens_github_issues_in_your_browser), style = ty.bodySmall, color = cs.onSurfaceVariant)
         }
         val md = "[![Get it on Orion Store](https://raw.githubusercontent.com/RookieEnough/Orion-Store/refs/heads/main/assets/orion-badge.png)](https://rookieenough.github.io/Orion-Data/redirect.html?id=${enc(id)})"
         Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(28.dp)).background(cs.surfaceContainer).clickable { badge = !badge; vm.haptic(H.SELECTION) }
@@ -1199,8 +1202,8 @@ fun SubmissionSheet(vm: MainViewModel, onDismiss: () -> Unit) = OrionSheet(onDis
                 }
                 Spacer(Modifier.width(12.dp))
                 Column(Modifier.weight(1f)) {
-                    Text("Badge for your README", style = ty.titleMediumEmphasized)
-                    Text("Link people straight to this app in Orion", style = ty.bodySmall, color = cs.onSurfaceVariant)
+                    Text(stringResource(R.string.community_badge_for_your_readme), style = ty.titleMediumEmphasized)
+                    Text(stringResource(R.string.community_link_people_straight_to_this_app), style = ty.bodySmall, color = cs.onSurfaceVariant)
                 }
                 Icon(if (badge) Sym.ExpandLess else Sym.ExpandMore, null)
             }
@@ -1208,7 +1211,7 @@ fun SubmissionSheet(vm: MainViewModel, onDismiss: () -> Unit) = OrionSheet(onDis
                 Eyebrow("Markdown", cs.onSurfaceVariant)
                 Text(md, Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(cs.surfaceContainerHighest).padding(12.dp), style = ty.bodySmall, fontFamily = FontFamily.Monospace)
                 FilledTonalButton({ clip.setText(AnnotatedString(md)); t.show("Markdown copied"); vm.haptic(H.SUCCESS) }, shapes = ButtonDefaults.shapes()) {
-                    Icon(Sym.ContentCopy, null, Modifier.size(18.dp)); Spacer(Modifier.width(6.dp)); Text("Copy Markdown")
+                    Icon(Sym.ContentCopy, null, Modifier.size(18.dp)); Spacer(Modifier.width(6.dp)); Text(stringResource(R.string.community_copy_markdown))
                 }
                 Eyebrow("Deep link", cs.onSurfaceVariant)
                 Text("orionstore://app/${enc(id)}", style = ty.bodySmall, fontFamily = FontFamily.Monospace)
@@ -1221,7 +1224,7 @@ fun SubmissionSheet(vm: MainViewModel, onDismiss: () -> Unit) = OrionSheet(onDis
 @Composable
 private fun SubmitHero(platform: String, rank: String, rankIcon: ImageVector, cooldown: Int, done: Int, total: Int) = Column(Modifier.fillMaxWidth().padding(horizontal = 8.dp)) {
     Text("Submit ${if (platform == Platform.ANDROID) "an app" else if (platform == Platform.TV) "a TV app" else "software"}", style = ty.headlineSmallEmphasized)
-    Text("Reviewed on GitHub, then it lands in the store.", style = ty.bodyMedium, color = cs.onSurfaceVariant)
+    Text(stringResource(R.string.community_reviewed_on_github_then_it_lands), style = ty.bodyMedium, color = cs.onSurfaceVariant)
     Row(Modifier.padding(top = 12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
         Tag(rank, cs.tertiary, rankIcon); Tag("${cooldown / 60}h ${cooldown % 60}m cooldown", cs.onSurfaceVariant, Sym.Timer)
         Spacer(Modifier.weight(1f))
@@ -1244,7 +1247,7 @@ private fun ModeCard(title: String, desc: String, icon: ImageVector, shape: Roun
             Spacer(Modifier.weight(1f))
             AnimatedVisibility(on, enter = scaleIn(MaterialTheme.motionScheme.fastSpatialSpec()) + fadeIn(), exit = scaleOut() + fadeOut()) { Icon(Sym.CheckCircle, "Selected", tint = cs.primary) }
         }
-        Text(title, Modifier.padding(top = 12.dp), style = ty.titleSmallEmphasized)
+        Text(uiText(title), Modifier.padding(top = 12.dp), style = ty.titleSmallEmphasized)
         Text(desc, style = ty.bodySmall, color = cs.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
     }
 }

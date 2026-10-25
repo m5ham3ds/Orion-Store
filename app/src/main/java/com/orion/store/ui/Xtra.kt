@@ -1,5 +1,8 @@
 package com.orion.store.ui
 
+import androidx.compose.ui.res.stringResource
+import com.orion.store.R
+
 import android.Manifest
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -90,14 +93,14 @@ fun SheetToastHost(t: SheetToast) {
 @Composable
 fun ConfirmDialog(msg: String?, confirm: String = "Confirm", onConfirm: () -> Unit, onDismiss: () -> Unit) {
     if (msg != null) AlertDialog(onDismiss, confirmButton = { TextButton({ onConfirm(); onDismiss() }) { Text(confirm) } },
-        dismissButton = { TextButton(onDismiss) { Text("Cancel") } }, icon = { Icon(Sym.WarningAmber, null) }, text = { Text(msg) })
+        dismissButton = { TextButton(onDismiss) { Text(stringResource(R.string.ui_text_static_005)) } }, icon = { Icon(Sym.WarningAmber, null) }, text = { Text(msg) })
 }
 
 @Composable
 fun Tag(text: String, c: Color, icon: ImageVector? = null) = Surface(shape = Pill, color = c.copy(.14f), contentColor = c) {
     Row(Modifier.padding(horizontal = 10.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
         icon?.let { Icon(it, null, Modifier.size(14.dp)); Spacer(Modifier.width(4.dp)) }
-        Text(text, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
+        Text(uiText(text), style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
     }
 }
 
@@ -231,7 +234,7 @@ fun GuardianSheet(vm: MainViewModel, onDismiss: () -> Unit) = OrionSheet(onDismi
             Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                 MorphBlob(modes.map { it.shape }, mi, 48.dp, cs.primaryContainer) { Icon(mode.icon, null, Modifier.size(24.dp), tint = cs.onPrimaryContainer) }
                 Column(Modifier.weight(1f).padding(start = 14.dp)) {
-                    Text("Guardian", style = ty.headlineSmallEmphasized)
+                    Text(stringResource(R.string.ui_text_static_072), style = ty.headlineSmallEmphasized)
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Box(Modifier.size(6.dp).clip(CircleShape).background(if (shizuku) Safe else cs.error)); Spacer(Modifier.width(6.dp))
                         Text(if (tracker.root) "Root" else if (shizuku) "Shizuku on" else "Shizuku off", style = ty.labelMedium, color = cs.onSurfaceVariant)
@@ -252,7 +255,7 @@ fun GuardianSheet(vm: MainViewModel, onDismiss: () -> Unit) = OrionSheet(onDismi
         }
         item("search") {
             TextField(query, { query = it }, Modifier.fillMaxWidth().padding(horizontal = 16.dp), singleLine = true, shape = Pill,
-                placeholder = { Text("Search apps or packages") }, leadingIcon = { Icon(Sym.Search, null) },
+                placeholder = { Text(stringResource(R.string.xtra_search_apps_or_packages)) }, leadingIcon = { Icon(Sym.Search, null) },
                 trailingIcon = { if (query.isNotEmpty()) IconButton({ query = "" }) { Icon(Sym.Close, "Clear") } },
                 colors = TextFieldDefaults.colors(focusedContainerColor = cs.surfaceContainerHigh, unfocusedContainerColor = cs.surfaceContainerHigh,
                     focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent))
@@ -298,35 +301,35 @@ fun GuardianSheet(vm: MainViewModel, onDismiss: () -> Unit) = OrionSheet(onDismi
         AlertDialog({ permApp = null }, icon = { PkgIcon(tracker, a.packageName, 48) }, title = { Text(a.name, textAlign = TextAlign.Center) },
             text = {
                 Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                    Text("Allowed to use", Modifier.padding(bottom = 6.dp), style = ty.labelLarge, color = cs.onSurfaceVariant)
+                    Text(stringResource(R.string.ui_text_static_073), Modifier.padding(bottom = 6.dp), style = ty.labelLarge, color = cs.onSurfaceVariant)
                     a.permissions.forEach { p ->
                         Row(Modifier.fillMaxWidth().padding(vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
                             Icon(permIcon(p), null, Modifier.size(20.dp), tint = cs.onSurfaceVariant)
                             Text(cleanPermName(p).lowercase().replaceFirstChar { it.uppercase() }, Modifier.weight(1f).padding(horizontal = 12.dp), style = ty.bodyMedium)
                             if (processing == a.packageName) LoadingIndicator(Modifier.size(28.dp))
-                            else TextButton({ revoke(a.packageName, p) }, enabled = processing == null, colors = ButtonDefaults.textButtonColors(contentColor = cs.error)) { Text("Revoke") }
+                            else TextButton({ revoke(a.packageName, p) }, enabled = processing == null, colors = ButtonDefaults.textButtonColors(contentColor = cs.error)) { Text(stringResource(R.string.ui_text_static_074)) }
                         }
                     }
                 }
             },
-            confirmButton = { TextButton({ permApp = null }) { Text("Done") } })
+            confirmButton = { TextButton({ permApp = null }) { Text(stringResource(R.string.ui_text_static_057)) } })
     }
     surgeApp?.let { a ->
         AlertDialog({ surgeApp = null }, icon = { PkgIcon(tracker, a.packageName, 48) }, title = { Text(a.name, textAlign = TextAlign.Center) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("Saves this app's APK to your Downloads folder.", style = ty.bodyMedium)
+                    Text(stringResource(R.string.ui_text_static_075), style = ty.bodyMedium)
                     Text(a.packageName, Modifier.clickable { copy(a.packageName) }, style = ty.labelSmall, fontFamily = FontFamily.Monospace, color = cs.onSurfaceVariant)
                 }
             },
-            confirmButton = { TextButton({ surgeApp = null; extract(a.packageName) }, enabled = processing == null) { Text("Extract APK") } },
-            dismissButton = { TextButton({ surgeApp = null }) { Text("Close") } })
+            confirmButton = { TextButton({ surgeApp = null; extract(a.packageName) }, enabled = processing == null) { Text(stringResource(R.string.xtra_extract_apk)) } },
+            dismissButton = { TextButton({ surgeApp = null }) { Text(stringResource(R.string.ui_text_static_069)) } })
     }
     ConfirmDialog(confirm?.first, "Confirm", { confirm?.second?.let { a -> scope.launch { a() } } }) { confirm = null }
-    if (tab == "debloater" && !accepted) AlertDialog({ tab = "permissions" }, icon = { Icon(Sym.WarningAmber, null) }, title = { Text("Careful with system apps") },
-        text = { Text("Some keep your phone running. Removing the wrong one can break features or stop the phone from starting. Anything removed can be restored here.") },
-        confirmButton = { TextButton({ accepted = true; vm.setFlag("debloat", "1") }) { Text("I understand") } },
-        dismissButton = { TextButton({ tab = "permissions" }) { Text("Back") } })
+    if (tab == "debloater" && !accepted) AlertDialog({ tab = "permissions" }, icon = { Icon(Sym.WarningAmber, null) }, title = { Text(stringResource(R.string.ui_text_static_076)) },
+        text = { Text(stringResource(R.string.ui_text_static_077)) },
+        confirmButton = { TextButton({ accepted = true; vm.setFlag("debloat", "1") }) { Text(stringResource(R.string.ui_text_static_078)) } },
+        dismissButton = { TextButton({ tab = "permissions" }) { Text(stringResource(R.string.ui_text_static_079)) } })
     info?.let { a ->
         val u = uad[a.packageName]; val r = debloatRisk(u?.removal)
         AlertDialog({ info = null }, icon = { PkgIcon(tracker, a.packageName, 48) }, title = { Text(a.name, textAlign = TextAlign.Center) },
@@ -343,7 +346,7 @@ fun GuardianSheet(vm: MainViewModel, onDismiss: () -> Unit) = OrionSheet(onDismi
                 TextButton({ info = null; toggle(a) }, enabled = processing == null,
                     colors = if (a.isInstalled) ButtonDefaults.textButtonColors(contentColor = cs.error) else ButtonDefaults.textButtonColors()) { Text(if (a.isInstalled) "Remove" else "Restore") }
             },
-            dismissButton = { TextButton({ info = null }) { Text("Close") } })
+            dismissButton = { TextButton({ info = null }) { Text(stringResource(R.string.ui_text_static_069)) } })
     }
 }
 
@@ -356,7 +359,7 @@ private fun GuardRow(tracker: AppTracker, pkg: String, name: String, i: Int, n: 
         Row(Modifier.padding(horizontal = 14.dp, vertical = 12.dp).alpha(if (dim) .55f else 1f), verticalAlignment = Alignment.CenterVertically) {
             PkgIcon(tracker, pkg, 40)
             Column(Modifier.weight(1f).padding(horizontal = 14.dp)) {
-                Text(name, style = ty.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(uiText(name), style = ty.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     dot?.let { Box(Modifier.size(6.dp).clip(CircleShape).background(it)); Spacer(Modifier.width(6.dp)) }
                     Text(sub, style = ty.labelMedium, color = cs.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
@@ -424,7 +427,7 @@ private fun SecurityCard(title: String, desc: String, status: String, c: Color, 
         Row(Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
             Blob(icon, c, 40)
             Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
-                Text(title, style = MaterialTheme.typography.titleSmall)
+                Text(uiText(title), style = MaterialTheme.typography.titleSmall)
                 Text(desc, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             Tag(status, c)
@@ -437,7 +440,7 @@ private fun ScanAction(icon: ImageVector, c: Color, title: String, desc: String,
         Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
             Blob(icon, c, 52, shape)
             Column(Modifier.weight(1f).padding(horizontal = 14.dp)) {
-                Text(title, style = MaterialTheme.typography.titleMediumEmphasized)
+                Text(uiText(title), style = MaterialTheme.typography.titleMediumEmphasized)
                 Text(desc, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             Icon(Sym.ChevronRight, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -450,7 +453,7 @@ private fun Advisory() {
     @Composable fun Sec(id: String, title: String, body: @Composable ColumnScope.() -> Unit) = Surface({ open = if (open == id) null else id }, shape = RoundedCornerShape(18.dp), color = MaterialTheme.colorScheme.surfaceContainerHighest) {
         Column(Modifier.padding(14.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(title, Modifier.weight(1f), style = MaterialTheme.typography.titleSmall)
+                Text(uiText(title), Modifier.weight(1f), style = MaterialTheme.typography.titleSmall)
                 Icon(if (open == id) Sym.ExpandLess else Sym.ExpandMore, null)
             }
             AnimatedVisibility(open == id) { Column(Modifier.padding(top = 8.dp), verticalArrangement = Arrangement.spacedBy(6.dp), content = body) }
@@ -459,23 +462,23 @@ private fun Advisory() {
     val small = MaterialTheme.typography.bodySmall
     Card(shape = RoundedCornerShape(28.dp), colors = CardDefaults.cardColors(Caution.copy(.1f))) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) { Icon(Sym.Info, null, tint = Caution); Spacer(Modifier.width(8.dp)); Text("A Note on These Findings", style = MaterialTheme.typography.titleSmall) }
-            Text("Sentinel's analysis uses a global threat database. While powerful, automated systems can sometimes produce false positives. This means a flagged file may not actually be malicious. We strongly recommend you verify these findings before taking action.", style = small)
-            Text("How to Double-Check:", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+            Row(verticalAlignment = Alignment.CenterVertically) { Icon(Sym.Info, null, tint = Caution); Spacer(Modifier.width(8.dp)); Text(stringResource(R.string.xtra_a_note_on_these_findings), style = MaterialTheme.typography.titleSmall) }
+            Text(stringResource(R.string.ui_text_static_080), style = small)
+            Text(stringResource(R.string.xtra_how_to_double_check), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
             Sec("virustotal", "1. Use VirusTotal") {
-                TextButton({ uri.openUri("https://www.virustotal.com/") }) { Icon(Sym.OpenInNew, null, Modifier.size(16.dp)); Spacer(Modifier.width(6.dp)); Text("Scan Online") }
-                Text("This service analyzes files with 70+ scanners. Use this guide:", style = small)
-                Text("0 detections: Generally safe.", style = small, color = Safe)
-                Text("1-5 detections: Likely a false positive.", style = small, color = Caution)
-                Text("5+ detections: High caution. Treat as dangerous.", style = small, color = Red)
+                TextButton({ uri.openUri("https://www.virustotal.com/") }) { Icon(Sym.OpenInNew, null, Modifier.size(16.dp)); Spacer(Modifier.width(6.dp)); Text(stringResource(R.string.xtra_scan_online)) }
+                Text(stringResource(R.string.xtra_this_service_analyzes_files_with_70), style = small)
+                Text(stringResource(R.string.xtra_0_detections_generally_safe), style = small, color = Safe)
+                Text(stringResource(R.string.xtra_1_5_detections_likely_a_false), style = small, color = Caution)
+                Text(stringResource(R.string.xtra_5_detections_high_caution_treat_as), style = small, color = Red)
             }
             Sec("source", "2. Consider the Source") {
-                Text("Official sources like GitHub, F-Droid, or the Play Store are generally trustworthy. Unofficial websites carry higher risk.", style = small)
-                Text("Why do safe sources get flagged?", style = MaterialTheme.typography.labelLarge)
-                Text("Antivirus scanners sometimes use \"heuristic\" analysis, which means they look for suspicious behaviors. Apps that need advanced permissions (like root) or modify other apps (like ReVanced) can trigger these warnings, even if they are perfectly safe.", style = small)
+                Text(stringResource(R.string.xtra_official_sources_like_github_f_droid), style = small)
+                Text(stringResource(R.string.xtra_why_do_safe_sources_get_flagged), style = MaterialTheme.typography.labelLarge)
+                Text(stringResource(R.string.xtra_antivirus_scanners_sometimes_use_heuristic_analy), style = small)
             }
             Sec("community", "3. Search the Community") {
-                Text("Search for the file's hash (use the copy button) online. Communities like Reddit often have discussions about specific files.", style = small)
+                Text(stringResource(R.string.ui_text_static_081), style = small)
             }
         }
     }
@@ -547,24 +550,24 @@ fun SentinelSheet(vm: MainViewModel, onDismiss: () -> Unit) = OrionSheet(onDismi
             when (v) {
                 "permissions" -> {
                     hero(Sym.Lock, Caution, MaterialShapes.Cookie9Sided)
-                    Text("Access Required", style = MaterialTheme.typography.headlineSmallEmphasized)
-                    Text("Sentinel needs permission to scan your device's storage for threats.", textAlign = TextAlign.Center, color = c.onSurfaceVariant)
+                    Text(stringResource(R.string.xtra_access_required), style = MaterialTheme.typography.headlineSmallEmphasized)
+                    Text(stringResource(R.string.ui_text_static_082), textAlign = TextAlign.Center, color = c.onSurfaceVariant)
                     Button({
                         tracker.universalStorageIntent()?.let { runCatching { ctx.startActivity(it) } }
                             ?: legacy.launch(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE))
-                    }, modifier = Modifier.fillMaxWidth().height(56.dp), shapes = ButtonDefaults.shapes()) { Icon(Sym.FolderOpen, null); Spacer(Modifier.width(8.dp)); Text("Grant Storage Access") }
-                    Text("This is a one-time request.", style = MaterialTheme.typography.labelSmall, color = c.onSurfaceVariant)
+                    }, modifier = Modifier.fillMaxWidth().height(56.dp), shapes = ButtonDefaults.shapes()) { Icon(Sym.FolderOpen, null); Spacer(Modifier.width(8.dp)); Text(stringResource(R.string.xtra_grant_storage_access)) }
+                    Text(stringResource(R.string.xtra_this_is_a_one_time_request), style = MaterialTheme.typography.labelSmall, color = c.onSurfaceVariant)
                 }
                 "database" -> {
                     LoadingIndicator(Modifier.size(112.dp))
-                    Text("Syncing Threat Intel", style = MaterialTheme.typography.headlineSmallEmphasized)
+                    Text(stringResource(R.string.xtra_syncing_threat_intel), style = MaterialTheme.typography.headlineSmallEmphasized)
                     Text(if (dbStatus == "updating") "Downloading latest threat signatures..." else "Connecting to Sentinel network...", color = c.onSurfaceVariant)
                     LinearWavyProgressIndicator({ dbProgress / 100f }, Modifier.fillMaxWidth())
                     if (dbStatus == "updating") Text("${dbProgress.toInt()}%", style = MaterialTheme.typography.labelLarge)
                 }
                 "main" -> {
                     hero(Sym.GppGood, Safe, MaterialShapes.SoftBurst)
-                    Text("System Protected", style = MaterialTheme.typography.headlineSmallEmphasized)
+                    Text(stringResource(R.string.xtra_system_protected), style = MaterialTheme.typography.headlineSmallEmphasized)
                     ScanAction(Sym.Bolt, MaterialTheme.colorScheme.primary, "Rapid Scan", "Checks installed apps & APKs", MaterialShapes.Cookie4Sided, ::rapidScan)
                     ScanAction(Sym.Radar, Purple, "Deep Scan", "Analyzes file storage & downloads", MaterialShapes.Clover4Leaf, ::deepScan)
                     ScanAction(Sym.Wifi, SkyC, "Network Sentry", "Connection & Security Audit", MaterialShapes.Pill) { view = "network" }
@@ -580,11 +583,11 @@ fun SentinelSheet(vm: MainViewModel, onDismiss: () -> Unit) = OrionSheet(onDismi
                 "results" -> {
                     if (threats.isEmpty() && rapid.isEmpty()) {
                         hero(Sym.CheckCircle, Safe, MaterialShapes.Sunny)
-                        Text("System Clean", style = MaterialTheme.typography.headlineSmallEmphasized)
-                        Text("No threats detected.", color = c.onSurfaceVariant)
+                        Text(stringResource(R.string.xtra_system_clean), style = MaterialTheme.typography.headlineSmallEmphasized)
+                        Text(stringResource(R.string.xtra_no_threats_detected), color = c.onSurfaceVariant)
                     } else {
                         Advisory()
-                        Text("Threat Report", Modifier.fillMaxWidth(), style = MaterialTheme.typography.titleLargeEmphasized)
+                        Text(stringResource(R.string.xtra_threat_report), Modifier.fillMaxWidth(), style = MaterialTheme.typography.titleLargeEmphasized)
                         @Composable fun Item(key: String, title: String, sub: String?, fields: List<Pair<String, String>>, copyLabel: String, copyValue: String?) {
                             val open = expanded == key
                             Card({ expanded = if (open) null else key }, Modifier.fillMaxWidth(), shape = RoundedCornerShape(24.dp), colors = CardDefaults.cardColors(c.errorContainer.copy(.45f))) {
@@ -592,7 +595,7 @@ fun SentinelSheet(vm: MainViewModel, onDismiss: () -> Unit) = OrionSheet(onDismi
                                     Row(verticalAlignment = Alignment.CenterVertically) {
                                         Icon(Sym.BugReport, null, tint = c.error)
                                         Column(Modifier.weight(1f).padding(horizontal = 10.dp)) {
-                                            Text(title, style = MaterialTheme.typography.titleSmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                            Text(uiText(title), style = MaterialTheme.typography.titleSmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
                                             sub?.let { Text(it, style = MaterialTheme.typography.labelSmall, color = c.error) }
                                         }
                                         Icon(if (open) Sym.ExpandLess else Sym.ExpandMore, null)
@@ -601,7 +604,7 @@ fun SentinelSheet(vm: MainViewModel, onDismiss: () -> Unit) = OrionSheet(onDismi
                                         Column(Modifier.padding(top = 10.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                                             fields.forEach { (k, value) ->
                                                 Text(k, style = MaterialTheme.typography.labelSmall, color = c.onSurfaceVariant)
-                                                Text(value, style = MaterialTheme.typography.bodySmall, fontFamily = FontFamily.Monospace)
+                                                Text(uiText(value), style = MaterialTheme.typography.bodySmall, fontFamily = FontFamily.Monospace)
                                             }
                                             copyValue?.let { cv -> FilledTonalButton({ clip.setText(AnnotatedString(cv)); vm.haptic(H.SELECTION) }, shapes = ButtonDefaults.shapes()) { Icon(Sym.ContentCopy, null, Modifier.size(16.dp)); Spacer(Modifier.width(6.dp)); Text(copyLabel) } }
                                         }
@@ -610,35 +613,35 @@ fun SentinelSheet(vm: MainViewModel, onDismiss: () -> Unit) = OrionSheet(onDismi
                             }
                         }
                         if (threats.isNotEmpty()) {
-                            Text("Infected Files (Deep Scan)", Modifier.fillMaxWidth(), style = MaterialTheme.typography.labelLarge, color = c.error)
+                            Text(stringResource(R.string.xtra_infected_files_deep_scan), Modifier.fillMaxWidth(), style = MaterialTheme.typography.labelLarge, color = c.error)
                             threats.forEachIndexed { i, t ->
                                 Item("file-$i", t.path.substringAfterLast('/'), t.threat, listOf("Full Path" to t.path) + (if (t.hash.isNotEmpty()) listOf("SHA-256 Hash" to t.hash) else emptyList()), "Copy Hash", t.hash.ifEmpty { null })
                             }
                         }
                         if (rapid.isNotEmpty()) {
-                            Text("Suspicious Apps (Rapid Scan)", Modifier.fillMaxWidth(), style = MaterialTheme.typography.labelLarge, color = c.error)
+                            Text(stringResource(R.string.xtra_suspicious_apps_rapid_scan), Modifier.fillMaxWidth(), style = MaterialTheme.typography.labelLarge, color = c.error)
                             rapid.forEachIndexed { i, (n, p) -> Item("app-$i", n, null, listOf("Package Name" to p), "Copy Package Name", p) }
                         }
                     }
-                    Button({ view = "main" }, modifier = Modifier.fillMaxWidth().height(56.dp), shapes = ButtonDefaults.shapes()) { Text("Return") }
+                    Button({ view = "main" }, modifier = Modifier.fillMaxWidth().height(56.dp), shapes = ButtonDefaults.shapes()) { Text(stringResource(R.string.ui_text_static_083)) }
                 }
                 else -> when {
                     netScanning -> {
                         LoadingIndicator(Modifier.size(112.dp))
-                        Text("Auditing Network...", style = MaterialTheme.typography.headlineSmallEmphasized)
-                        Text("Checking connection integrity", color = c.onSurfaceVariant)
+                        Text(stringResource(R.string.xtra_auditing_network), style = MaterialTheme.typography.headlineSmallEmphasized)
+                        Text(stringResource(R.string.xtra_checking_connection_integrity), color = c.onSurfaceVariant)
                     }
                     net == null -> {
                         hero(Sym.WifiOff, Red, MaterialShapes.Cookie9Sided)
-                        Text("Scan Failed", style = MaterialTheme.typography.headlineSmallEmphasized)
-                        Text("Could not retrieve network information.", color = c.onSurfaceVariant)
-                        Button({ netScan() }, shapes = ButtonDefaults.shapes()) { Icon(Sym.Refresh, null); Spacer(Modifier.width(8.dp)); Text("Rescan") }
+                        Text(stringResource(R.string.xtra_scan_failed_2), style = MaterialTheme.typography.headlineSmallEmphasized)
+                        Text(stringResource(R.string.xtra_could_not_retrieve_network_information), color = c.onSurfaceVariant)
+                        Button({ netScan() }, shapes = ButtonDefaults.shapes()) { Icon(Sym.Refresh, null); Spacer(Modifier.width(8.dp)); Text(stringResource(R.string.ui_text_static_084)) }
                     }
                     else -> {
                         val n = net!!; val enc = encryptionInfo(n.encryptionType); val dns = dnsInfo(n.dnsServers); val adb = n.adbEnabled || n.adbWifiEnabled
                         hero(Sym.Shield, Blue, MaterialShapes.Cookie12Sided)
-                        Text("Connection Security", style = MaterialTheme.typography.headlineSmallEmphasized)
-                        Text("Live analysis of your current network", color = c.onSurfaceVariant)
+                        Text(stringResource(R.string.xtra_connection_security), style = MaterialTheme.typography.headlineSmallEmphasized)
+                        Text(stringResource(R.string.xtra_live_analysis_of_your_current_network), color = c.onSurfaceVariant)
                         SecurityCard("Encryption", enc.desc, enc.text, enc.color, enc.icon)
                         SecurityCard("DNS Integrity", dns.desc, dns.text, dns.color, dns.icon)
                         SecurityCard("Captive Portal", if (n.isCaptivePortal) "Web login page detected." else "Direct network access.", if (n.isCaptivePortal) "Active" else "None",
@@ -646,7 +649,7 @@ fun SentinelSheet(vm: MainViewModel, onDismiss: () -> Unit) = OrionSheet(onDismi
                         SecurityCard("ADB Watchdog", "Developer bridge status", if (adb) "Active" else "Inactive", if (adb) Red else Safe, Sym.Terminal)
                         SecurityCard("Proxy Check", "Detects traffic redirection", if (n.hasProxy) "Active" else "Inactive", if (n.hasProxy) Red else Safe, Sym.AccountTree)
                         SecurityCard("VPN Status", "Checks for active VPN tunnel", if (n.isVpnActive) "Active" else "Inactive", if (n.isVpnActive) Blue else Safe, Sym.VpnLock)
-                        Button({ view = "main" }, modifier = Modifier.fillMaxWidth().height(56.dp), shapes = ButtonDefaults.shapes()) { Text("Return") }
+                        Button({ view = "main" }, modifier = Modifier.fillMaxWidth().height(56.dp), shapes = ButtonDefaults.shapes()) { Text(stringResource(R.string.ui_text_static_083)) }
                     }
                 }
             }

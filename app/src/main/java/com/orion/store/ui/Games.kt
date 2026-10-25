@@ -1,5 +1,8 @@
 package com.orion.store.ui
 
+import androidx.compose.ui.res.stringResource
+import com.orion.store.R
+
 import android.annotation.SuppressLint
 import android.graphics.BitmapFactory
 import android.webkit.JavascriptInterface
@@ -99,9 +102,9 @@ fun DinoGameSheet(vm: MainViewModel, onDismiss: () -> Unit) = OrionSheet(onDismi
     }
     Row(Modifier.padding(horizontal = 24.dp), verticalAlignment = Alignment.CenterVertically) {
         Column(Modifier.weight(1f)) {
-            Text("MINI GAME", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Black)
-            Text("Orion Run", style = MaterialTheme.typography.headlineSmallEmphasized)
-            Text("Play while the store is under maintenance.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(stringResource(R.string.games_mini_game), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Black)
+            Text(stringResource(R.string.games_orion_run), style = MaterialTheme.typography.headlineSmallEmphasized)
+            Text(stringResource(R.string.games_play_while_the_store_is_under), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
     DinoWeb(web, { status = it; if (it == "playing") { over = null; record = false } }, { score = it }, { sc ->
@@ -125,11 +128,11 @@ fun DinoGameSheet(vm: MainViewModel, onDismiss: () -> Unit) = OrionSheet(onDismi
         }
     }
     AnimatedVisibility(record) {
-        Row(Modifier.padding(16.dp, 8.dp), verticalAlignment = Alignment.CenterVertically) { Icon(Sym.Star, null, tint = MaterialTheme.colorScheme.tertiary); Spacer(Modifier.width(6.dp)); Text("New record!", fontWeight = FontWeight.Bold) }
+        Row(Modifier.padding(16.dp, 8.dp), verticalAlignment = Alignment.CenterVertically) { Icon(Sym.Star, null, tint = MaterialTheme.colorScheme.tertiary); Spacer(Modifier.width(6.dp)); Text(stringResource(R.string.games_new_record), fontWeight = FontWeight.Bold) }
     }
     Row(Modifier.padding(16.dp).navigationBarsPadding(), verticalAlignment = Alignment.CenterVertically) {
         Icon(Sym.PhoneAndroid, null, tint = MaterialTheme.colorScheme.onSurfaceVariant); Spacer(Modifier.width(10.dp))
-        Column(Modifier.weight(1f)) { Text("Control", style = MaterialTheme.typography.labelLarge); Text("Action button or tap", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+        Column(Modifier.weight(1f)) { Text(stringResource(R.string.ui_text_static_035), style = MaterialTheme.typography.labelLarge); Text(stringResource(R.string.games_action_button_or_tap), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
         Button({ action(); vm.haptic(H.LIGHT) }, modifier = Modifier.heightIn(min = 56.dp), shapes = ButtonDefaults.shapes()) {
             Text(when (status) { "crashed" -> "Restart"; "idle" -> "Play"; else -> "Jump" }, style = MaterialTheme.typography.titleMedium)
         }
